@@ -27,4 +27,12 @@ class Ativo extends Model
         'stAtivo',
     ];
 
+    public function corretora(){
+        $sql = "SELECT corretoras.nome AS nmCorretora FROM corretoras, ativo_corretoras WHERE
+        corretoras.id=ativo_corretoras.id_corretora
+        AND ativo_corretoras.id_ativo='$this->id'";
+        $result = collect(\DB::select($sql))->first();
+        return $result->nmCorretora;
+    }
+
 }

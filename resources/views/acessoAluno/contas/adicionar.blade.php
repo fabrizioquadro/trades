@@ -4,18 +4,19 @@
 <div class="container-xxl flex-grow-1 container-p-y">
     <div class="card">
         <div class="card-body">
-            <div class="row">
-                <div class="col-md-6">
-                    <h5 class="card-title">Adicionar Conta</h5>
-                </div>
+            <div class="d-flex justify-content-start align-items-center">
+                <a href="javascript:history.back()" title="Voltar" style="margin-right: 20px">
+                    <img src="{{ asset('/public/img/IconsPng/Voltar.png') }}" height="50px" alt="">
+                </a>
+                <h5 class="card-title">Adicionar Conta</h5>
             </div>
             <form action="{{ route('aluno.contas.insert') }}" method="post">
               @csrf
               <div class="row mt-2 gy-4">
                 <div class="col-md-3 mt-3">
                   <div class="form-floating form-floating-outline">
-                    <input required class="form-control" type="number" id="nrConta" name="nrConta" placeholder="Numero"/>
-                    <label for="nrConta">Numero:</label>
+                    <input required class="form-control" type="number" id="nrConta" name="nrConta" placeholder="Número"/>
+                    <label for="nrConta">Número:</label>
                   </div>
                 </div>
                 <div class="col-md-3 mt-3">
@@ -53,6 +54,16 @@
                           <option value="GBP">GBP</option>
                       </select>
                       <label for="moeda">Moeda:</label>
+                    </div>
+                  </div>
+                  <div class="col-md-3 mt-3">
+                    <div class="form-floating form-floating-outline">
+                      <select required id="tpConta" name='tpConta' class="select2 form-select">
+                          <option value="">Opções</option>
+                          <option value="Real">Real</option>
+                          <option value="Demo">Demo</option>
+                      </select>
+                      <label for="tpConta">Tipo de Conta:</label>
                     </div>
                   </div>
               </div>

@@ -42,14 +42,23 @@ $porcentagemCPMax = round(($drawndownCapMaxAtual * 100 / $capitalMaximo), 2);
 <div class="container-xxl flex-grow-1 container-p-y">
     <div class="card">
         <div class="card-body">
-            <div class="row">
-                <div class="col-md-6">
-                    <h5 class="card-title">Extrato Global</h5>
-                </div>
-                <div class="col-md-6" align='right'>
-                    <button type="button" id='btnImprimir' class="btn btn-warning btn-sm">Imprimir</button>
+            <div class="d-flex justify-content-between">
+                <h5 class="card-title">Extrato Global</h5>
+                <div class="d-flex justify-content-end">
+                    <button type="button" id='btnImprimir' class="btn btn-warning">Imprimir</button>
+                    <select class="form-control" onchange='alteraMoedaCalculo(this.value)' style="margin-left: 20px !important">
+                        <option @if($moedaNome == 'BRL') selected @endif value="BRL">BRL</option>
+                        <option @if($moedaNome == 'USD') selected @endif value="USD">USD</option>
+                        <option @if($moedaNome == 'EUR') selected @endif value="EUR">EUR</option>
+                        <option @if($moedaNome == 'GBP') selected @endif value="GBP">GBP</option>
+                    </select>
                 </div>
             </div>
+            <script>
+            function alteraMoedaCalculo(moeda){
+                window.location.href = "{{ route('aluno.financeiro.resumoGlobal') }}/" + moeda;
+            }
+            </script>
             <div id="divDados">
                 <div class="card mt-3">
                     <div class="card-body">
@@ -200,6 +209,101 @@ $porcentagemCPMax = round(($drawndownCapMaxAtual * 100 / $capitalMaximo), 2);
                                     </div>
                                 </div>
                             </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="card mt-3">
+                <div class="card-body">
+                    <h5 class="card-title">Evolução Financeira</h5>
+                    <div class="row">
+                        <div class="col-md-12">
+                            <div id="lineAreaChart"></div>
+                            <script>
+                            var legendColor = "#696969";
+                            var borderColor = "#696969";
+                            var labelColor = "#696969";
+                            const areaChartEl = document.querySelector('#lineAreaChart'),
+                                areaChartConfig = {
+                                    chart: {
+                                        height: 400,
+                                        type: 'area',
+                                        parentHeightOffset: 0,
+                                        toolbar: {
+                                            show: false
+                                        }
+                                    },
+                                    dataLabels: {
+                                        enabled: false
+                                    },
+                                    stroke: {
+                                        show: false,
+                                        curve: 'straight'
+                                    },
+                                    legend: {
+                                        show: true,
+                                        position: 'top',
+                                        horizontalAlign: 'start',
+                                        labels: {
+                                            colors: legendColor,
+                                            useSeriesColors: false
+                                        }
+                                    },
+                                    grid: {
+                                        borderColor: borderColor,
+                                        xaxis: {
+                                            lines: {
+                                                show: false
+                                            }
+                                        },
+                                        yaxis: {
+                                            lines: {
+                                                show: false
+                                            }
+                                        }
+                                    },
+                                    colors: [{!! $coresGrafico !!}],
+                                    series: [
+                                        {!! $series !!}
+                                    ],
+                                    xaxis: {
+                                        categories: [
+                                            {!! $categorias !!}
+                                        ],
+                                        axisBorder: {
+                                            show: false
+                                        },
+                                        axisTicks: {
+                                            show: false
+                                        },
+                                        labels: {
+                                            style: {
+                                                colors: labelColor,
+                                                fontSize: '13px'
+                                            }
+                                        }
+                                    },
+                                    yaxis: {
+                                        labels: {
+                                            style: {
+                                                colors: labelColor,
+                                                fontSize: '13px'
+                                            }
+                                        }
+                                    },
+                                    fill: {
+                                        opacity: 1,
+                                        type: 'solid'
+                                    },
+                                    tooltip: {
+                                        shared: false
+                                    }
+                                };
+                                if (typeof areaChartEl !== undefined && areaChartEl !== null) {
+                                    const areaChart = new ApexCharts(areaChartEl, areaChartConfig);
+                                    areaChart.render();
+                                }
+                            </script>
                         </div>
                     </div>
                 </div>

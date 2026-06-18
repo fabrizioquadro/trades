@@ -5,12 +5,18 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use App\Models\User;
+use App\Models\AtivoMercado;
+use App\Models\Ativo;
+use App\Models\Trade;
+use App\Http\Controllers\TradeAlunoController;
 
 class LoginController extends Controller
 {
     public function teste(){
-        return view('teste');
-
+        //$trades = Trade::all();
+        //foreach ($trades as $) {
+        //    
+        //}
     }
 
     public function index(){

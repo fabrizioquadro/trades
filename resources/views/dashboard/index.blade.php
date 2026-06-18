@@ -438,6 +438,24 @@ elseif($user->moedaBase == "JPY"){
                                                                 $controle = "";
                                                                 if($filtroPais){
                                                                     foreach($filtroPais as $linha){
+                                                                        if($linha == 'INT'){
+                                                                            $controle = "checked";
+                                                                        }
+                                                                    }
+                                                                }
+                                                                @endphp
+                                                                <input class="form-check-input filtroPais" {{ $controle }} type="checkbox" value="INT" id="paisINT">
+                                                                <label class="form-check-label" for="paisINT"> INT </label>
+                                                            </div>
+                                                            </div>
+                                                    </div>
+                                                    <div class="row">
+                                                        <div class="col-md-12">
+                                                            <div class="form-check mt-3">
+                                                                @php
+                                                                $controle = "";
+                                                                if($filtroPais){
+                                                                    foreach($filtroPais as $linha){
                                                                         if($linha == 'Cryptos'){
                                                                             $controle = "checked";
                                                                         }
@@ -615,7 +633,7 @@ elseif($user->moedaBase == "JPY"){
                                                 <div class="card-body">
                                                     <h6 class="card-title">Filtro</h6>
                                                     @php
-                                                    $arrayTipos = ['Índices','CFDs','Ações','Forex','Cryptos','Financeiros','ADRs','BDRs','ETFs','Fundos','Energéticos','Metais','Grãos','Carne','Softs'];
+                                                    $arrayTipos = ['Índices','Índice CFD','CFDs','Ações','Forex','Cryptos','Financeiros','ADRs','BDRs','ETFs','Fundos','Energéticos','Metais','Grãos','Carne','Softs'];
                                                     $i = 0;
                                                     @endphp
                                                     @foreach($arrayTipos as $tp)

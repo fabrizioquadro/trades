@@ -38,7 +38,7 @@
         }
     </style>
 </head>
-<div class="auth-layout-wrap" style="background-image: url({{ asset('/public//img/loginAlunosSmartMoney.png') }});background-position: center;">
+<div class="auth-layout-wrap" style="background-image: url({{ asset('/public//img/loginAlunosSmartMoney.jpg') }});background-position: center;">
     <div class="auth-content">
         <div class="card o-hidden" style="box-shadow: none !important">
             @yield('conteudo')

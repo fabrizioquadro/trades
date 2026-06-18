@@ -10,12 +10,11 @@ class MensagemController extends Controller
 {
     public function index(){
         $mensagens = Mensagen::buscaMensagensAdm();
-
         return view('mensagens/index', compact('mensagens'));
     }
 
     public function aluno($id){
-        $mensagens = Mensagen::where('id_aluno', $id)->orderByDesc('dtHrMensagem')->get();
+        $mensagens = Mensagen::where('id_aluno', $id)->orderBy('dtHrMensagem')->get();
 
         //vamos marcar essas mensagens como lidas
         Mensagen::where('id_aluno', $id)->update(['stViewAdm' => 'Sim']);
@@ -37,6 +36,6 @@ class MensagemController extends Controller
 
         Mensagen::create($dados);
 
-        return redirect()->route('mensagens')->with('mensagem','Mensagem Enviada.');
+        return redirect()->route('mensagens.aluno', $request->get('id_aluno'))->with('mensagem','Mensagem Enviada.');
     }
 }

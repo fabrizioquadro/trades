@@ -22,10 +22,11 @@ elseif($ativo->moedaAtivo == "JPY"){
 <div class="container-xxl flex-grow-1 container-p-y">
     <div class="card">
         <div class="card-body">
-            <div class="row">
-                <div class="col-md-6">
-                    <h5 class="card-title">Visualizar Ativo</h5>
-                </div>
+            <div class="d-flex justify-content-start align-items-center">
+                <a href="javascript:history.back()" title="Voltar" style="margin-right: 20px">
+                    <img src="{{ asset('/public/img/IconsPng/Voltar.png') }}" height="50px" alt="">
+                </a>
+                <h5 class="card-title">Visualizar Ativo</h5>
             </div>
               <div class="row mt-2 gy-4">
                 <div class="col-md-4">

@@ -186,6 +186,7 @@
       class: 'kanban-title-button btn btn-default btn-md shadow-none text-capitalize fw-normal', // default class of the button
       footer: false // position the button on footer
     },
+
     click: function (el) {
       let element = el;
       let title = element.getAttribute('data-eid')
@@ -281,6 +282,11 @@
       addNew.querySelector('.cancel-add-item').addEventListener('click', function (e) {
         addNew.remove();
       });
+    },
+
+    dropEl: function(el, target, source, sibling){
+      console.log(target.parentElement.getAttribute('data-id'));
+      console.log(el.getAttribute('data-eid'))
     }
   });
 

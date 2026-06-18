@@ -40,9 +40,18 @@
                                     <i class="mdi mdi-dots-vertical"></i>
                                   </button>
                                   <div class="dropdown-menu" data-popper-placement="bottom-end" style="position: absolute; inset: 0px 0px auto auto; margin: 0px; transform: translate(-101.111px, 134.444px);">
-                                      <a class="dropdown-item waves-effect" href="{{ route('faq.editar', $linha->id) }}"><i class="mdi mdi-pencil-outline me-1"></i> Editar</a>
-                                      <a class="dropdown-item waves-effect" href="{{ route('faq.excluir', $linha->id) }}"><i class="mdi mdi-trash-can-outline me-1"></i> Excluir</a>
-                                      <a class="dropdown-item waves-effect" href="{{ route('faq.visualizar', $linha->id) }}"><i class="mdi mdi-eye-outline me-1"></i> Visualizar</a>
+                                      <a class="dropdown-item waves-effect" href="{{ route('faq.editar', $linha->id) }}">
+                                          <img src="{{ asset('/public//img/IconsPng/Editar.png') }}" height="35px" alt="" style="margin-right: 10px">
+                                          Editar
+                                      </a>
+                                      <a class="dropdown-item waves-effect" href="{{ route('faq.excluir', $linha->id) }}">
+                                          <img src="{{ asset('/public//img/IconsPng/Excluir.png') }}" height="35px" alt="" style="margin-right: 10px">
+                                          Excluir
+                                      </a>
+                                      <a class="dropdown-item waves-effect" href="{{ route('faq.visualizar', $linha->id) }}">
+                                          <img src="{{ asset('/public//img/IconsPng/Visualizar.png') }}" height="35px" alt="" style="margin-right: 10px">
+                                          Visualizar
+                                      </a>
                                   </div>
                                 </div>
                             </li>

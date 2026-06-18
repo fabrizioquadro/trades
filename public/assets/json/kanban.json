@@ -1,7 +1,7 @@
 [
   {
-    "id": "board-in-progress",
-    "title": "In Progress",
+    "id": "board-segunda",
+    "title": "Seg",
     "item": [
       {
         "id": "in-progress-1",
@@ -42,8 +42,8 @@
     ]
   },
   {
-    "id": "board-in-review",
-    "title": "In Review",
+    "id": "board-terca",
+    "title": "Ter",
     "item": [
       {
         "id": "in-review-1",
@@ -87,8 +87,8 @@
     ]
   },
   {
-    "id": "board-done",
-    "title": "Done",
+    "id": "board-quarta",
+    "title": "Qua",
     "item": [
       {
         "id": "done-1",
@@ -124,6 +124,34 @@
           "Sarah"
         ]
       }
+    ]
+  },
+  {
+    "id": "board-quinta",
+    "title": "Qui",
+    "item": [
+
+    ]
+  },
+  {
+    "id": "board-sexta",
+    "title": "Sex",
+    "item": [
+
+    ]
+  },
+  {
+    "id": "board-sabado",
+    "title": "Sab",
+    "item": [
+
+    ]
+  },
+  {
+    "id": "board-domingo",
+    "title": "Dom",
+    "item": [
+
     ]
   }
 ]

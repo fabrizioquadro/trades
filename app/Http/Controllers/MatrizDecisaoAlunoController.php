@@ -37,8 +37,7 @@ class MatrizDecisaoAlunoController extends Controller
         $aluno = session()->get('aluno');
         $dados = $request->all();
         $dados['id_aluno'] = $aluno->id;
-        $dados['dtHrCadastro'] = date('Y-m-d H:i:s');
-
+        
         MatrizDecisao::create($dados);
 
         return redirect()->route('aluno.matrizDecisao')->with('mensagem','Matriz de Decisão Salva');

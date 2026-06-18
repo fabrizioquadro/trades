@@ -11,12 +11,12 @@
             <div class="row justify-content-center">
                 <div class="col-md-8">
                     @if($mensagem = Session::get('erro'))
-                        <div class="alert alert-solid-danger" role="alert">
+                        <div class="alert alert-solid-danger" style="color: #fff" role="alert">
                             {{ $mensagem }}
                         </div>
                     @endif
                     @if($mensagem = Session::get('mensagem'))
-                        <div class="alert alert-solid-success" role="alert">
+                        <div class="alert alert-solid-success" style="color: #fff" role="alert">
                             {{ $mensagem }}
                         </div>
                     @endif

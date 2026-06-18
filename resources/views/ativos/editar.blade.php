@@ -7,10 +7,11 @@
 <div class="container-xxl flex-grow-1 container-p-y">
     <div class="card">
         <div class="card-body">
-            <div class="row">
-                <div class="col-md-6">
-                    <h5 class="card-title">Editar Ativo</h5>
-                </div>
+            <div class="d-flex justify-content-start align-items-center">
+                <a href="javascript:history.back()" title="Voltar" style="margin-right: 20px">
+                    <img src="{{ asset('/public/img/IconsPng/Voltar.png') }}" height="50px" alt="">
+                </a>
+                <h5 class="card-title">Editar Ativo</h5>
             </div>
             <form action="{{ route('ativos.update') }}" method="post">
               @csrf
@@ -21,6 +22,7 @@
                     <select required id="id_tipoAtivo" name='tipoAtivo' class="select2 form-select">
                       <option value="">Opções</option>
                       <option @if($ativo->tipoAtivo == "Índices") selected  @endif value="Índices">Índices</option>
+                      <option @if($ativo->tipoAtivo == "Índice CFD") selected  @endif value="Índice CFD">Índice CFD</option>
                       <option @if($ativo->tipoAtivo == "CFDs") selected  @endif value="CFDs">CFDs</option>
                       <option @if($ativo->tipoAtivo == "Ações") selected  @endif value="Ações">Ações</option>
                       <option @if($ativo->tipoAtivo == "Forex") selected  @endif value="Forex">Forex</option>
@@ -47,6 +49,7 @@
                       <option @if($ativo->pais == "EUA") selected @endif value="EUA">EUA</option>
                       <option @if($ativo->pais == "EUR") selected @endif value="EUR">EUR</option>
                       <option @if($ativo->pais == "UK") selected @endif value="UK">UK</option>
+                      <option @if($ativo->pais == "INT") selected @endif value="INT">INT</option>
                       <option @if($ativo->pais == "Cryptos") selected @endif value="Cryptos">Cryptos</option>
                     </select>
                     <label for="id_pais">País:</label>
@@ -115,7 +118,7 @@
               <div class="row mt-2 gy-4">
                 <div class="col-md-6">
                   <div class="form-floating form-floating-outline">
-                    <input required class="form-control" type="text" id="tamanhoContrato" name="tamanhoContrato" placeholder="Tamanho Contrato"  value="{{ $ativo->tamanhoContrato }}"/>
+                    <input class="form-control" type="text" id="tamanhoContrato" name="tamanhoContrato" placeholder="Tamanho Contrato"  value="{{ $ativo->tamanhoContrato }}"/>
                     <label for="tamanhoContrato">Tamanho Contrato:</label>
                   </div>
                 </div>
@@ -129,7 +132,7 @@
               <div class="row mt-2 gy-4">
                 <div class="col-md-3">
                   <div class="form-floating form-floating-outline">
-                    <input required class="form-control" type="text" id="valor" name="valor" placeholder="Valor" onkeypress="return(MascaraMoeda(this,'.',',',event))" value="{{ valorDbForm($ativo->valor) }}"/>
+                    <input class="form-control" type="text" id="valor" name="valor" placeholder="Valor" onkeypress="return(MascaraMoeda(this,'.',',',event))" value="{{ valorDbForm($ativo->valor) }}"/>
                     <label for="valor">Valor:</label>
                   </div>
                 </div>

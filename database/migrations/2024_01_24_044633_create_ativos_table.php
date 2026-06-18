@@ -19,9 +19,9 @@ return new class extends Migration
             $table->string('pais');
             $table->string('tipoAtivo');
             $table->string('exchange');
-            $table->string('tamanhoContrato');
+            $table->string('tamanhoContrato')->nullable();
             $table->string('meses');
-            $table->double('valor',10,2);
+            $table->double('valor',10,2)->nullable();
             $table->double('tick',10,2);
             $table->double('swing',10,2);
             $table->double('dayTrading',10,2);

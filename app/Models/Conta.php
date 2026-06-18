@@ -14,6 +14,7 @@ class Conta extends Model
         'id_corretora',
         'nrConta',
         'nmConta',
+        'tpConta',
         'dsConta',
         'vlContaInc',
         'moeda',
@@ -21,7 +22,7 @@ class Conta extends Model
 
     public static function listarContasAluno($id_aluno){
         return \DB::table('contas')
-          ->select('contas.id','contas.id_corretora','contas.nrConta','contas.nmConta','contas.vlContaInc','contas.dsConta','contas.moeda','corretoras.nome')
+          ->select('contas.id','contas.id_corretora','contas.nrConta','contas.nmConta','contas.tpConta','contas.vlContaInc','contas.dsConta','contas.moeda','corretoras.nome')
           ->leftJoin('corretoras', 'contas.id_corretora','=','corretoras.id')
           ->where('contas.id_aluno','=',$id_aluno)
           ->get();

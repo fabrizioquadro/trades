@@ -17,6 +17,7 @@ return new class extends Migration
             $table->unsignedBigInteger('id_corretora');
             $table->integer('nrConta');
             $table->string('nmConta');
+            $table->string('tpConta');
             $table->text('dsConta')->nullable();
             $table->double('vlContaInc', 10, 2)->nullable();
             $table->string('moeda');

@@ -37,6 +37,7 @@ return new class extends Migration
             $table->string('filtroMoeda')->nullable();
             $table->string('filtroTipoCusto')->nullable();
             $table->string('filtroResultado')->nullable();
+            $table->text('filtroTrades')->nullable();
             $table->string('moedaBase')->default('BRL');
             $table->timestamp('email_verified_at')->nullable();
             $table->rememberToken();

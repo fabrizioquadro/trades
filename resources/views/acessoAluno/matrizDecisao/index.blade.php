@@ -2,6 +2,9 @@
 
 @section('conteudo')
 <style>
+label{
+    color: white;
+}
 .form-control{
     font-size: 14px !important;
 }
@@ -32,13 +35,14 @@ select {
                 @if($controle == "true")
                     <input type="hidden" name="id_matriz" value="{{ $matrizSet->id_matriz }}">
                 @else
+                    <input type="hidden" name="dtHrCadastro" id='dtHrCadastro'>
                     <div class="row">
                         <div class="col-md-6 form-group">
-                            <label for="">Ativo:</label>
+                            <label class='mb-3' for="">Ativo:</label>
                             <select required id="ativo" name='id_ativo' class="form-control combobox">
                                 <option value="">Opções</option>
                                 @foreach($ativos as $ativo)
-                                    <option value="{{ $ativo->id }}">{{ $ativo->nome }}</option>
+                                    <option value="{{ $ativo->id }}">{{ $ativo->simbolo." - ".$ativo->nome }}</option>
                                 @endforeach
                             </select>
                         </div>
@@ -595,7 +599,8 @@ select {
                 </div>
                 <div class="row mt-3">
                     <div class="col-md-12">
-                        <button type="submit" class="btn btn-primary me-2">{{ $controle == "true" ? 'Editar' : 'Salvar' }}</button>
+                        {{--<button type="submit" class="btn btn-primary me-2">{{ $controle == "true" ? 'Salvar' : 'Salvar' }}</button>--}}
+                        <button type="submit" class="btn btn-primary me-2">Salvar</button>
                     </div>
                 </div>
             </form>
@@ -605,7 +610,7 @@ select {
         <div class="card-body">
             <div class="row">
                 <div class="col-md-6 form-group">
-                    <label for="matriz">Matriz Salva</label>
+                    <label class="mb-3" for="matriz">Matrizes Salvas</label>
                     <select required id="matriz" name='id_matriz' onchange="buscarMatriz(this)" class="form-control combobox">
                         <option value="">Opções</option>
                         @foreach($matrizes as $matriz)
@@ -827,6 +832,10 @@ function buscarMatriz(e){
 }
 
 window.addEventListener('load',()=>{
+    agora = new Date();
+    dtHrCadastro = agora.getFullYear() + '-' + String(agora.getMonth() + 1).padStart(2,'0') + '-' + agora.getDate().toString().padStart(2,'0') + ' ' + agora.getHours() + ':' + agora.getMinutes();
+    document.getElementById('dtHrCadastro').value = dtHrCadastro;
+
     $('.combobox').combobox();
 });
 

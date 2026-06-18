@@ -17,7 +17,7 @@
                     <select required id="id_conta" name='id_conta' class="select2 form-select">
                         <option value="">Opções</option>
                         @foreach($contas as $conta)
-                            <option value="{{ $conta->id }}">{{ $conta->nrConta }} - {{ $conta->nmConta }}</option>
+                            <option value="{{ $conta->id }}">{{ $conta->nrConta }} {{ $conta->nmConta." - ".$conta->tpConta }}</option>
                         @endforeach
                     </select>
                     <label for="id_conta">Conta:</label>

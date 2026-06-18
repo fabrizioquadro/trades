@@ -51,8 +51,14 @@
                                             <i class="mdi mdi-dots-vertical"></i>
                                           </button>
                                           <div class="dropdown-menu" data-popper-placement="bottom-end" style="position: absolute; inset: 0px 0px auto auto; margin: 0px; transform: translate(-101.111px, 134.444px);">
-                                              <a class="dropdown-item waves-effect" href="{{ route('tutoriais.editar', $tutorial->id) }}"><i class="mdi mdi-pencil-outline me-1"></i> Editar</a>
-                                              <a class="dropdown-item waves-effect" href="{{ route('tutoriais.excluir', $tutorial->id) }}"><i class="mdi mdi-trash-can-outline me-1"></i> Excluir</a>
+                                              <a class="dropdown-item waves-effect" href="{{ route('tutoriais.editar', $tutorial->id) }}">
+                                                  <img src="{{ asset('/public//img/IconsPng/Editar.png') }}" height="35px" alt="" style="margin-right: 10px">
+                                                  Editar
+                                              </a>
+                                              <a class="dropdown-item waves-effect" href="{{ route('tutoriais.excluir', $tutorial->id) }}">
+                                                  <img src="{{ asset('/public//img/IconsPng/Excluir.png') }}" height="35px" alt="" style="margin-right: 10px">
+                                                  Excluir
+                                              </a>
                                           </div>
                                         </div>
                                     @endif

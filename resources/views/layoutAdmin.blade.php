@@ -5,7 +5,7 @@
   class="light-style layout-navbar-fixed layout-menu-fixed layout-compact"
   dir="ltr"
   data-theme="theme-default"
-  data-assets-path="/public/assets/"
+  data-assets-path="{{ asset('/public/assets/').'/' }}"
   data-template="vertical-menu-template">
   <head>
     <meta charset="utf-8" />
@@ -56,6 +56,8 @@
     <link rel="stylesheet" href="{{ asset('/public/assets/vendor/libs/datatables-checkboxes-jquery/datatables.checkboxes.css') }}" />
     <link rel="stylesheet" href="{{ asset('/public/assets/vendor/libs/datatables-buttons-bs5/buttons.bootstrap5.css') }}" />
     <link rel="stylesheet" href="{{ asset('/public/assets/vendor/libs/datatables-rowgroup-bs5/rowgroup.bootstrap5.css') }}" />
+    <link rel="stylesheet" href="{{ asset('/public/css/bootstrap-combobox.css') }}" />
+    <link rel="stylesheet" href="https://cdn.ckeditor.com/ckeditor5/42.0.0/ckeditor5.css" />
 
     <!-- Helpers -->
     <script src="{{ asset('/public/assets/vendor/js/helpers.js') }}"></script>
@@ -67,11 +69,10 @@
     <script src="{{ asset('/public/assets/js/config.js') }}"></script>
     <script src="{{ asset('/public/assets/vendor/libs/sortablejs/sortable.js') }}"></script>
 
-
     <style>
 
     .table-responsive{
-        min-height: 350px !important;
+        min-height: 500px !important;
     }
 
     .dataTables_length, .dataTables_filter, .dataTables_info{
@@ -102,11 +103,11 @@
     }
 
     .fontSize12{
-        font-size: 18px !important;
+        font-size: 36px !important;
     }
 
     .fontSize25{
-        font-size: 25px !important;
+        font-size: 30px !important;
     }
 
     .input-group-text{
@@ -143,7 +144,7 @@
             <a href="{{ route('dashboard') }}" class="app-brand-link">
               <span class="app-brand-logo demo">
                 <span style="color: var(--bs-primary)">
-                    <img src="{{ asset('/public/img/logoNaoCompleto.png') }}" style='height: 60px;' alt="">
+                    <img src="{{ asset('/public/img/logoCompleto.png') }}" style='height: 60px;' alt="">
                 </span>
               </span>
               <!-- <span class="app-brand-text demo menu-text fw-bold ms-2">SmartMoneyMakers</span> -->
@@ -168,7 +169,7 @@
           <ul class="menu-inner py-1">
             <li class="menu-item">
               <a href="{{ route('dashboard') }}" class="menu-link">
-                <img src="{{ asset('/public/img/Icons/Dashboard.svg') }}" height="40px" alt="" style="margin-right: 10px">
+                <img src="{{ asset('/public/img/IconsPng/Dashboard.png') }}" height="40px" alt="" style="margin-right: 10px">
                 <div data-i18n="Dashboard">Dashboard</div>
               </a>
             </li>
@@ -177,57 +178,193 @@
             </li>
             <li class="menu-item">
               <a href="{{ route('usuarios') }}" class="menu-link">
-                <img src="{{ asset('/public/img/Icons/Usuarios.svg') }}" height="40px"  alt="" style="margin-right: 10px">
+                <img src="{{ asset('/public/img/IconsPng/Usuarios.png') }}" height="40px"  alt="" style="margin-right: 10px">
                 <div data-i18n="Usuários">Usuários</div>
               </a>
             </li>
             <li class="menu-item">
               <a href="{{ route('tags') }}" class="menu-link">
-                <img src="{{ asset('/public/img/Icons/Tags.svg') }}" height="40px"  alt="" style="margin-right: 10px">
+                <img src="{{ asset('/public/img/IconsPng/Tags.png') }}" height="40px"  alt="" style="margin-right: 10px">
                 <div data-i18n="Tags">Tags</div>
               </a>
             </li>
             <li class="menu-item">
+              <a href="{{ route('ativosMercado') }}" class="menu-link">
+                <img src="{{ asset('/public/img/IconsPng/Dashboard Mercado.png') }}" height="40px"  alt="" style="margin-right: 10px">
+                <div data-i18n="Ativos Mercado">Ativos Mercado</div>
+              </a>
+            </li>
+            <li class="menu-item">
               <a href="{{ route('alunos') }}" class="menu-link">
-                <img src="{{ asset('/public/img/Icons/Alunos.svg') }}" height="40px"  alt="" style="margin-right: 10px">
+                <img src="{{ asset('/public/img/IconsPng/Alunos.png') }}" height="40px"  alt="" style="margin-right: 10px">
                 <div data-i18n="Alunos">Alunos</div>
               </a>
             </li>
             <li class="menu-item">
+              <a href="{{ route('actionPlan') }}" class="menu-link">
+                <img src="{{ asset('/public/img/IconsPng/Action Plan.png') }}" height="40px"  alt="" style="margin-right: 10px">
+                <div data-i18n="Action Plans">Action Plans</div>
+              </a>
+            </li>
+            <li class="menu-item">
+              <a href="{{ route('prontuarioTurma') }}" class="menu-link">
+                <img src="{{ asset('/public/img/IconsPng/Prontuario Turma.png') }}" height="40px"  alt="" style="margin-right: 10px">
+                <div data-i18n="Prontuário Turma">Prontuário Turma</div>
+              </a>
+            </li>
+            <li class="menu-item">
+              <a href="{{ route('prontuarioAluno') }}" class="menu-link">
+                <img src="{{ asset('/public/img/IconsPng/Prontuario Alunos.png') }}" height="40px"  alt="" style="margin-right: 10px">
+                <div data-i18n="Prontuário Aluno">Prontuário Aluno</div>
+              </a>
+            </li>
+            <li class="menu-item">
               <a href="{{ route('mensagens') }}" class="menu-link">
-                <img src="{{ asset('/public/img/Icons/Mensagens.svg') }}" height="40px"  alt="" style="margin-right: 10px">
+                <img src="{{ asset('/public/img/IconsPng/Mensagens.png') }}" height="40px"  alt="" style="margin-right: 10px">
                 <div data-i18n="Mensagens">Mensagens</div>
               </a>
             </li>
             <li class="menu-item">
               <a href="{{ route('corretoras') }}" class="menu-link">
-                <img src="{{ asset('/public/img/Icons/Corretoras.svg') }}" height="40px"  alt="" style="margin-right: 10px">
+                <img src="{{ asset('/public/img/IconsPng/Corretoras.png') }}" height="40px"  alt="" style="margin-right: 10px">
                 <div data-i18n="Corretoras">Corretoras</div>
               </a>
             </li>
             <li class="menu-item">
               <a href="{{ route('ativos') }}" class="menu-link">
-                <img src="{{ asset('/public/img/Icons/Ativos.svg') }}" height="40px"  alt="" style="margin-right: 10px">
+                <img src="{{ asset('/public/img/IconsPng/Ativos.png') }}" height="40px"  alt="" style="margin-right: 10px">
                 <div data-i18n="Ativos">Ativos</div>
               </a>
             </li>
+            <li class="menu-item" style="">
+              <a href="javascript:void(0);" class="menu-link menu-toggle waves-effect">
+                <img src="{{ asset('/public/img/IconsPng/Consistency Diamond.png') }}" height="40px" alt="" style="margin-right: 10px">
+                <div data-i18n="Consistency Diamond">Consistency Diamond</div>
+              </a>
+              <ul class="menu-sub">
+                <li class="menu-item">
+                  <a href="{{ route('consistence.listar') }}" class="menu-link">
+                    <img src="{{ asset('/public/img/IconsPng/Consistency Diamond.png') }}" height="40px" alt="" style="margin-right: 10px">
+                    <div data-i18n="Consistency Diamond">Consistency Diamond</div>
+                  </a>
+                </li>
+                <li class="menu-item">
+                  <a href="{{ route('consistenceFases') }}" class="menu-link">
+                    <img src="{{ asset('/public/img/IconsPng/Fases.png') }}" height="40px" alt="" style="margin-right: 10px">
+                    <div data-i18n="Fases">Fases</div>
+                  </a>
+                </li>
+                <li class="menu-item">
+                  <a href="{{ route('consistence.riskReward') }}" class="menu-link">
+                    <img src="{{ asset('/public/img/IconsPng/Risk Reward.png') }}" height="40px" alt="" style="margin-right: 10px">
+                    <div data-i18n="Risk X Reward">Risk X Reward</div>
+                  </a>
+                </li>
+                <li class="menu-item">
+                  <a href="{{ route('consistence.weeks') }}" class="menu-link">
+                    <img src="{{ asset('/public/img/IconsPng/Profitable Weeks.png') }}" height="40px" alt="" style="margin-right: 10px">
+                    <div data-i18n="Profitable Weeks">Profitable Weeks</div>
+                  </a>
+                </li>
+                <li class="menu-item">
+                  <a href="{{ route('consistence.months') }}" class="menu-link">
+                    <img src="{{ asset('/public/img/IconsPng/Profitable Months.png') }}" height="40px" alt="" style="margin-right: 10px">
+                    <div data-i18n="Profitable Months">Profitable Months</div>
+                  </a>
+                </li>
+                <li class="menu-item">
+                  <a href="{{ route('consistence.gainsLosses') }}" class="menu-link">
+                    <img src="{{ asset('/public/img/IconsPng/Gains X Losses.png') }}" height="40px" alt="" style="margin-right: 10px">
+                    <div data-i18n="Gains X Losses">Gains X Losses</div>
+                  </a>
+                </li>
+                <li class="menu-item">
+                  <a href="{{ route('consistence.trades') }}" class="menu-link">
+                    <img src="{{ asset('/public/img/IconsPng/Trade Plan Compliance.png') }}" height="40px" alt="" style="margin-right: 10px">
+                    <div data-i18n="Trade Plan Compliance">Trade Plan Compliance</div>
+                  </a>
+                </li>
+              </ul>
+            </li>
             <li class="menu-item">
               <a href="{{ route('resultados') }}" class="menu-link">
-                <img src="{{ asset('/public/img/Icons/OnePageReport.svg') }}" height="40px"  alt="" style="margin-right: 10px">
+                <img src="{{ asset('/public/img/IconsPng/One page Report.png') }}" height="40px"  alt="" style="margin-right: 10px">
                 <div data-i18n="One Page Report">One Page Report</div>
               </a>
             </li>
             <li class="menu-item">
+              <a href="{{ route('matrizDecisao') }}" class="menu-link">
+                <img src="{{ asset('/public/img/IconsPng/Matriz Decisao.png') }}" height="40px" alt="" style="margin-right: 10px">
+                <div data-i18n="Matriz Decisão">Matriz Decisão</div>
+              </a>
+            </li>
+            <li class="menu-item">
+              <a href="{{ route('planTrade') }}" class="menu-link">
+                <img src="{{ asset('/public/img/IconsPng/Plano de Trade.png') }}" height="40px" alt="" style="margin-right: 10px">
+                <div data-i18n="Planos de Trades">Planos de Trades</div>
+              </a>
+            </li>
+            <li class="menu-item">
               <a href="{{ route('tutoriais') }}" class="menu-link">
-                <img src="{{ asset('/public/img/Icons/Tutoriais.svg') }}" height="40px" alt="" style="margin-right: 10px">
+                <img src="{{ asset('/public/img/IconsPng/Tutoriais.png') }}" height="40px" alt="" style="margin-right: 10px">
                 <div data-i18n="Tutoriais">Tutoriais</div>
               </a>
             </li>
             <li class="menu-item">
               <a href="{{ route('faq') }}" class="menu-link">
-                <img src="{{ asset('/public/img/Icons/PerguntasFrequentes.svg') }}" height="40px" alt="" style="margin-right: 10px">
+                <img src="{{ asset('/public/img/IconsPng/Perguntas Frequentes.png') }}" height="40px" alt="" style="margin-right: 10px">
                 <div data-i18n="FAQ">FAQ</div>
               </a>
+            </li>
+            <li class="menu-item">
+              <a href="{{ route('tickets') }}" class="menu-link">
+                <img src="{{ asset('/public/img/IconsPng/Tickets.png') }}" height="40px" alt="" style="margin-right: 10px">
+                <div data-i18n="Tickets">Tickets</div>
+              </a>
+            </li>
+            <li class="menu-item" style="">
+              <a href="javascript:void(0);" class="menu-link menu-toggle waves-effect">
+                <img src="{{ asset('/public/img/IconsPng/Agreements.png') }}" height="40px" alt="" style="margin-right: 10px">
+                <div data-i18n="Agreements">Agreements</div>
+              </a>
+              <ul class="menu-sub">
+                <li class="menu-item">
+                  <a href="{{ route('agreements.logs') }}" class="menu-link">
+                    <img src="{{ asset('/public/img/IconsPng/Log Agreements.png') }}" height="40px" alt="" style="margin-right: 10px">
+                    <div data-i18n="Logs">Logs</div>
+                  </a>
+                </li>
+                <li class="menu-item">
+                  <a href="{{ route('termosPrivacyPolicy') }}" class="menu-link">
+                    <img src="{{ asset('/public/img/IconsPng/Privacy Policy 2.png') }}" height="40px" alt="" style="margin-right: 10px">
+                    <div data-i18n="Privacy Policy">Privacy Policy</div>
+                  </a>
+                </li>
+                <li class="menu-item">
+                  <a href="{{ route('cookiesPolicy') }}" class="menu-link">
+                    <img src="{{ asset('/public/img/IconsPng/Cookies Policy.png') }}" height="40px" alt="" style="margin-right: 10px">
+                    <div data-i18n="Cookies Policy">Cookies Policy</div>
+                  </a>
+                </li>
+                <li class="menu-item">
+                  <a href="{{ route('termsAndConditions') }}" class="menu-link">
+                    <img src="{{ asset('/public/img/IconsPng/Terms Conditions.png') }}" height="40px" alt="" style="margin-right: 10px">
+                    <div data-i18n="Terms and Conditions">Terms and Conditions</div>
+                  </a>
+                </li>
+                <li class="menu-item">
+                  <a href="{{ route('nonDisclosure') }}" class="menu-link">
+                    <img src="{{ asset('/public/img/IconsPng/Non-Disclosure.png') }}" height="40px" alt="" style="margin-right: 10px">
+                    <div data-i18n="End User License Agreement - EULA">End User License Agreement - EULA</div>
+                  </a>
+                </li>
+                <li class="menu-item">
+                  <a href="{{ route('riskWarning') }}" class="menu-link">
+                    <img src="{{ asset('/public/img/IconsPng/Risk Warning.png') }}" height="40px" alt="" style="margin-right: 10px">
+                    <div data-i18n="Risk Warning / Risk Disclosure ">Risk Warning / Risk Disclosure </div>
+                  </a>
+                </li>
+              </ul>
             </li>
           </ul>
         </aside>
@@ -287,13 +424,20 @@
                      </ul>
                    </li>
                    <!-- / Style Switcher-->
-                 @if(verificaMensagensAdm())
+                @if(verificaTicketAdm())
                      <li class="nav-item">
-                         <a href="{{ route('mensagens') }}" title='Mensagens'>
-                             <img style='height: 40px' src="{{ asset('/public/img/Icons/Notificacoes.svg') }}" alt="">
+                         <a href="{{ route('tickets') }}" title='Tickets'>
+                             <img style='height: 40px' src="{{ asset('/public/img/IconsPng/Tickets.png') }}" alt="">
                          </a>
                      </li>
-                   @endif
+                @endif
+                @if(verificaMensagensAdm())
+                     <li class="nav-item">
+                         <a href="{{ route('mensagens') }}" title='Mensagens'>
+                             <img style='height: 40px' src="{{ asset('/public/img/IconsPng/Notificacoes.png') }}" alt="">
+                         </a>
+                     </li>
+                @endif
                  <!-- User -->
                  @php
                  if(auth()->user()->imagem == ""){
@@ -330,13 +474,13 @@
                      </li>
                      <li>
                        <a class="dropdown-item" href="{{ route('perfil') }}">
-                         <i class="mdi mdi-account-outline me-2"></i>
+                         <img src="{{ asset('/public/img/IconsPng/Perfil.png') }}" height="25px" alt="" style="margin-right: 10px">
                          <span class="align-middle">Perfil</span>
                        </a>
                      </li>
                      <li>
                        <a class="dropdown-item" href="{{ route('perfil.alterarSenha') }}">
-                         <i class="mdi mdi-cog-outline me-2"></i>
+                         <img src="{{ asset('/public/img/IconsPng/Alterar Senha.png') }}" height="25px" alt="" style="margin-right: 10px">
                          <span class="align-middle">Alterar Senha</span>
                        </a>
                      </li>
@@ -345,7 +489,7 @@
                      </li>
                      <li>
                        <a class="dropdown-item" href="{{ route('logout') }}">
-                         <i class="mdi mdi-logout me-2"></i>
+                         <img src="{{ asset('/public/img/IconsPng/Sair.png') }}" height="25px" alt="" style="margin-right: 10px">
                          <span class="align-middle">Sair</span>
                        </a>
                      </li>
@@ -383,7 +527,7 @@
                     <script>
                       document.write(new Date().getFullYear());
                     </script>
-                    Smart Money Makers - Sistema Online<br>Desenvolvido por WEBEPEL SOLUÇÔES DIGITAIS
+                    Smart Money Makers - Sistema Online
                   </div>
                 </div>
               </div>

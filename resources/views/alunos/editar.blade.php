@@ -4,25 +4,32 @@
 <div class="container-xxl flex-grow-1 container-p-y">
     <div class="card">
         <div class="card-body">
-            <div class="row">
-                <div class="col-md-6">
-                    <h5 class="card-title">Editar Aluno</h5>
-                </div>
+            <div class="d-flex justify-content-start align-items-center">
+                <a href="javascript:history.back()" title="Voltar" style="margin-right: 20px">
+                    <img src="{{ asset('/public/img/IconsPng/Voltar.png') }}" height="50px" alt="">
+                </a>
+                <h5 class="card-title">Editar Aluno</h5>
             </div>
             <form action="{{ route('alunos.update') }}" method="post" enctype="multipart/form-data">
               @csrf
               <input type="hidden" name="id" value="{{ $aluno->id }}">
               <div class="row mt-2 gy-4">
-                <div class="col-md-6 mt-3">
+                <div class="col-md-4 mt-3">
                   <div class="form-floating form-floating-outline">
                     <input required class="form-control" type="text" id="nmAluno" name="nmAluno" placeholder="Nome" value="{{ $aluno->nmAluno }}">
                     <label for="nmAluno">Nome:</label>
                   </div>
                 </div>
-                <div class="col-md-6 mt-3">
+                <div class="col-md-4 mt-3">
                   <div class="form-floating form-floating-outline">
                     <input required class="form-control" type="text" id="dsEmail" name="dsEmail" placeholder="john.doe@example.com" value="{{ $aluno->dsEmail }}">
                     <label for="dsEmail">E-mail:</label>
+                  </div>
+                </div>
+                <div class="col-md-4 mt-3">
+                  <div class="form-floating form-floating-outline">
+                    <input class="form-control" type="text" id="userTradingView" name="userTradingView" placeholder="User TradingView:" value="{{ $aluno->userTradingView }}"/>
+                    <label for="userTradingView">User TradingView:</label>
                   </div>
                 </div>
             </div>
@@ -36,7 +43,7 @@
                 <div class="col-md-3 mt-3">
                   <div class="form-floating form-floating-outline">
                     <input class="form-control" type="text" id="nrEndereco" name="nrEndereco" placeholder="Numero" value="{{ $aluno->nrEndereco }}"/>
-                    <label for="nrEndereco">Numero:</label>
+                    <label for="nrEndereco">Número:</label>
                   </div>
                 </div>
                 <div class="col-md-3 mt-3">
@@ -68,7 +75,7 @@
                 <div class="col-md-3 mt-3">
                   <div class="form-floating form-floating-outline">
                     <input class="form-control" type="text" id="nmPais" name="nmPais" placeholder="Pais" value="{{ $aluno->nmPais }}"/>
-                    <label for="nmPais">Pais:</label>
+                    <label for="nmPais">País:</label>
                   </div>
                 </div>
                 <div class="col-md-3 mt-3">

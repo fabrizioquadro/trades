@@ -19,11 +19,9 @@ class Mensagen extends Model
     ];
 
     public static function buscaMensagensAdm(){
-        $sql = "SELECT max(m.id), m.id, m.id_aluno, m.dtHrMensagem, m.emissor, m.stViewAdm, a.nmAluno
-        FROM mensagens AS m
-        LEFT JOIN alunos AS a ON (m.id_aluno=a.id)
-        GROUP BY m.id_aluno
-        ORDER BY m.id DESC";
+        $sql = "SELECT * FROM mensagens
+        LEFT JOIN alunos ON (mensagens.id_aluno=alunos.id)
+        WHERE mensagens.id IN (SELECT max(id) FROM mensagens GROUP BY id_aluno)";
 
         return \DB::select($sql);
     }

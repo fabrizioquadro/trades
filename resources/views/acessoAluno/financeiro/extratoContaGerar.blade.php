@@ -48,10 +48,15 @@ $porcentagemCPMax = round(($drawndownCapMaxAtual * 100 / $capitalMaximo), 2);
     <div class="card">
         <div class="card-body">
             <div class="row">
-                <div class="col-md-6">
-                    <h5 class="card-title">Extrato Conta : {{ $conta->nmConta }}</h5>
+                <div class="col-md-8">
+                    <div class="d-flex justify-content-start align-items-center">
+                        <a href="javascript:history.back()" title="Voltar" style="margin-right: 20px">
+                            <img src="{{ asset('/public/img/IconsPng/Voltar.png') }}" height="50px" alt="">
+                        </a>
+                        <h5 class="card-title">Extrato Conta : {{ $conta->nmConta }}</h5>
+                    </div>
                 </div>
-                <div class="col-md-6" align='right'>
+                <div class="col-md-4" align='right'>
                     <button type="button" id="btnImprimir" class='btn btn-sm btn-warning'>Imprimir</button>
                 </div>
             </div>
@@ -268,6 +273,120 @@ $porcentagemCPMax = round(($drawndownCapMaxAtual * 100 / $capitalMaximo), 2);
                             </table>
                         </div>
                     </div>
+                </div>
+
+                <div class="card mt-3">
+                    <div class="card-header header-elements">
+                        <div>
+                            <h5 class="card-title mb-0">Evolução Financeira da Conta</h5>
+                        </div>
+                    </div>
+                    <div class="card-body pt-2">
+                        <div id="lineChartEvolucao"></div>
+                    </div>
+                    <script>
+                    const lineChartEvolucao = document.querySelector('#lineChartEvolucao'),
+                    lineChartConfigEv = {
+                        chart: {
+                            height: 400,
+                            fontFamily: 'Inter',
+                            type: 'line',
+                            parentHeightOffset: 0,
+                            zoom: {
+                                enabled: false
+                            },
+                            toolbar: {
+                                show: false
+                            }
+                        },
+                        series: [
+                            {
+                                name: 'Evolução',
+                                data: [{!! $stringValoresGrafico !!}]
+                            }
+                        ],
+                        markers: {
+                            strokeWidth: 7,
+                            strokeOpacity: 1,
+                            strokeColors: ['#ffffff'],
+                            colors: ['#ffffff']
+                        },
+                        legend: {
+                            show: true,
+                            position: 'bottom',
+                            markers: { offsetX: -3 },
+                            itemMargin: {
+                                vertical: 3,
+                                horizontal: 10
+                            },
+                            labels: {
+                                colors: '#ffffff',
+                                useSeriesColors: false
+                            }
+                        },
+                        dataLabels: {
+                            enabled: false
+                        },
+                        stroke: {
+                            curve: 'straight'
+                        },
+                        colors: ['#ffff00','#ff0000','#ffff00'],
+                        grid: {
+                            borderColor: '#ffffff',
+                            xaxis: {
+                                lines: {
+                                    show: false
+                                }
+                            },
+                            yaxis: {
+                                lines: {
+                                    show: false
+                                }
+                            },
+                            padding: {
+                                top: -20
+                            }
+                        },
+                        tooltip: {
+                            custom: function ({ series, seriesIndex, dataPointIndex, w }) {
+                                return '<div class="px-3 py-2">' + '<span> {!! @$moeda !!} ' + series[seriesIndex][dataPointIndex] + '</span>' + '</div>';
+                            }
+                        },
+                        xaxis: {
+                            categories: [
+                                {!! $stringDatasGrafico !!}
+                            ],
+                            axisBorder: {
+                                show: false
+                            },
+                            axisTicks: {
+                                show: false
+                            },
+                            labels: {
+                                show: false,
+                                style: {
+                                    colors: '#ffffff',
+                                    fontSize: '11px'
+                                }
+                            }
+                        },
+                        yaxis: {
+                            labels: {
+                                formatter: function(val) {
+                                    return val.toFixed(0);
+                                },
+                                style: {
+                                    colors: '#cdcdcd',
+                                    fontSize: '11px'
+                                }
+                            }
+                        }
+                    };
+                    if (typeof lineChartEvolucao !== undefined && lineChartEvolucao !== null) {
+                        const lineChartEv = new ApexCharts(lineChartEvolucao, lineChartConfigEv);
+                        lineChartEv.render();
+                    }
+                    </script>
                 </div>
             </div>
         </div>

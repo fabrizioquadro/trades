@@ -42,6 +42,7 @@ class User extends Authenticatable
         'filtroMoeda',
         'filtroTipoCusto',
         'filtroResultado',
+        'filtroTrades',
         'moedaBase',
     ];
 

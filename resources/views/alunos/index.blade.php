@@ -36,6 +36,7 @@
                                     <th>Email</th>
                                     <th>Telefone</th>
                                     <th>Pais</th>
+                                    <th>User TV</th>
                                     <th>Situação</th>
                                     <th>Tags</th>
                                     <th></th>
@@ -57,6 +58,7 @@
                                   <td>{{ $aluno->dsEmail }}</td>
                                   <td>{{ $aluno->nrTel }}</td>
                                   <td>{{ $aluno->nmPais }}</td>
+                                  <td>{{ $aluno->userTradingView }}</td>
                                   <td>{{ $aluno->stAluno }}</td>
                                   <td>{{ $tags }}</td>
                                   <td>
@@ -66,10 +68,30 @@
                                             <i class="mdi mdi-dots-vertical"></i>
                                           </button>
                                           <div class="dropdown-menu" data-popper-placement="bottom-end" style="position: absolute; inset: 0px 0px auto auto; margin: 0px; transform: translate(-101.111px, 134.444px);">
-                                              <a class="dropdown-item waves-effect" href="{{ route('alunos.editar', $aluno->id) }}"><i class="mdi mdi-pencil-outline me-1"></i> Editar</a>
-                                              <a class="dropdown-item waves-effect" href="{{ route('alunos.excluir', $aluno->id) }}"><i class="mdi mdi-trash-can-outline me-1"></i> Excluir</a>
-                                              <a class="dropdown-item waves-effect" href="{{ route('alunos.alterarSenha', $aluno->id) }}"><i class="mdi mdi-cog-outline me-1"></i> Alterar Senha</a>
-                                              <a class="dropdown-item waves-effect" href="{{ route('mensagens.aluno', $aluno->id) }}"><i class="mdi mdi-email-arrow-right-outline me-1"></i> Mensagens</a>
+                                              <a class="dropdown-item waves-effect" href="{{ route('alunos.editar', $aluno->id) }}">
+                                                  <img src="{{ asset('/public//img/IconsPng/Editar.png') }}" height="35px" alt="" style="margin-right: 10px">
+                                                  Editar
+                                              </a>
+                                              <a class="dropdown-item waves-effect" href="{{ route('alunos.excluir', $aluno->id) }}">
+                                                  <img src="{{ asset('/public//img/IconsPng/Excluir.png') }}" height="35px" alt="" style="margin-right: 10px">
+                                                  Excluir
+                                              </a>
+                                              <a class="dropdown-item waves-effect" href="{{ route('alunos.visualizar', $aluno->id) }}">
+                                                  <img src="{{ asset('/public//img/IconsPng/Visualizar.png') }}" height="35px" alt="" style="margin-right: 10px">
+                                                  Visualizar
+                                              </a>
+                                              <a class="dropdown-item waves-effect" href="{{ route('alunos.alterarSenha', $aluno->id) }}">
+                                                  <img src="{{ asset('/public//img/IconsPng/Alterar Senha.png') }}" height="35px" alt="" style="margin-right: 10px">
+                                                  Alterar Senha
+                                              </a>
+                                              <a class="dropdown-item waves-effect" href="{{ route('mensagens.aluno', $aluno->id) }}">
+                                                  <img src="{{ asset('/public//img/IconsPng/Mensagens.png') }}" height="35px" alt="" style="margin-right: 10px">
+                                                  Mensagens
+                                              </a>
+                                              <a class="dropdown-item waves-effect" href="{{ route('alunos.planTrade', $aluno->id) }}">
+                                                  <img src="{{ asset('/public//img/IconsPng/Plano de Trade.png') }}" height="35px" alt="" style="margin-right: 10px">
+                                                  Plan Trade
+                                              </a>
                                           </div>
                                         </div>
                                     @endif

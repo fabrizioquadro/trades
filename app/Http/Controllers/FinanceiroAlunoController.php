@@ -53,14 +53,21 @@ class FinanceiroAlunoController extends Controller
             $var = explode(' ', $trade->dtHrSaida);
             $movimento[] = strtotime($trade->dtHrSaida);
             $movimento[] = dataDbForm($var[0]);
-            $movimento[] = "Finalização da Trade ".$trade->idOperacao;
+            $movimento[] = "Finalização da Trade ".$trade->idOperacao.". Moeda: ".$trade->moeda;
             if($trade->resPosicaoFinanceiro < 0){
                 $movimento[] = 'Débito';
             }
             else{
                 $movimento[] = 'Crédito';
             }
-            $movimento[] = $trade->resPosicaoFinanceiro;
+
+            if($trade->moeda == $conta->moeda){
+                $movimento[] = $trade->resPosicaoFinanceiro;
+            }
+            else{
+                $multiplicador = 'cotacao'.$conta->moeda;
+                $movimento[] = $trade->resPosicaoFinanceiro * $trade->$multiplicador;
+            }
 
             $array_movimentos[] = $movimento;
         }
@@ -105,7 +112,21 @@ class FinanceiroAlunoController extends Controller
         $capitalMaximo = $vlSaldo;
         $capitalMinimo = $vlSaldo;
 
+        $arrayDatasGrafico = array();
+        $arrayValoresGrafico = array();
+        $controleData = false;
+
         foreach($array_movimentos as $array){
+            if($controleData == false){
+                $arrayDatasGrafico[] = $array[1];
+                $arrayValoresGrafico[] = round($vlSaldo, 2);
+                $controleData = $array[1];
+            }
+            elseif($controleData != $array[1]){
+                $arrayDatasGrafico[] = $array[1];
+                $arrayValoresGrafico[] = round($vlSaldo, 2);
+                $controleData = $array[1];
+            }
             $extrato = array();
             $extrato[] = $array[1];
             $extrato[] = $array[2];
@@ -125,6 +146,12 @@ class FinanceiroAlunoController extends Controller
             $array_extrato[] = $extrato;
         }
 
+        if(isset($array)){
+            $arrayDatasGrafico[] = $array[1];
+            $arrayValoresGrafico[] = round($vlSaldo, 2);
+            $controleData = $array[1];
+        }
+
         $drawndownCapIncAtual = $vlSaldo - $conta->vlContaInc;
         if($drawndownCapIncAtual > 0){
             $drawndownCapIncAtual = 0;
@@ -137,32 +164,53 @@ class FinanceiroAlunoController extends Controller
 
         $saldoAnterior = $moeda." ".valorDbForm($conta->vlContaInc);
 
+        $stringDatasGrafico = '';
+        foreach($arrayDatasGrafico as $linha){
+            $stringDatasGrafico .= ",'$linha'";
+        }
+        $stringDatasGrafico = substr($stringDatasGrafico, 1);
+
+        $stringValoresGrafico = '';
+        foreach($arrayValoresGrafico as $linha){
+            $stringValoresGrafico .= ",$linha";
+        }
+        $stringValoresGrafico = substr($stringValoresGrafico, 1);
+
         return view('acessoAluno/financeiro/extratoContaGerar',
             compact('array_extrato','conta','totalDepositos','totalSaques',
             'capitalMaximo','drawndownCapIncAtual','drawndownCapMaxAtual','moeda',
-            'vlSaldo','dtIncExtrato','controleInicio','saldoAnterior'));
+            'vlSaldo','dtIncExtrato','controleInicio','saldoAnterior','stringDatasGrafico',
+            'stringValoresGrafico'));
     }
 
-    public function resumoGlobal(){
+    public function resumoGlobal($moeda = null){
         $aluno = session()->get('aluno');
 
-        if($aluno->moedaBase == "BRL"){
+        if($moeda){
+            $moedaBase = $moeda;
+        }
+        else{
+            $moedaBase = $aluno->moedaBase;
+        }
+
+        $moedaNome = $moedaBase;
+        if($moedaBase == "BRL"){
             $multiplicador = 'cotacaoBRL';
             $moeda = "R$";
         }
-        elseif($aluno->moedaBase == "USD"){
+        elseif($moedaBase == "USD"){
             $multiplicador = 'cotacaoUSD';
             $moeda = "US$";
         }
-        elseif($aluno->moedaBase == "EUR"){
+        elseif($moedaBase == "EUR"){
             $multiplicador = 'cotacaoEUR';
             $moeda = "€";
         }
-        elseif($aluno->moedaBase == "GBP"){
+        elseif($moedaBase == "GBP"){
             $multiplicador = 'cotacaoGBP';
             $moeda = "£";
         }
-        elseif($aluno->moedaBase == "JPY"){
+        elseif($moedaBase == "JPY"){
             $multiplicador = 'cotacaoJPY';
             $moeda = "¥$";
         }
@@ -173,14 +221,15 @@ class FinanceiroAlunoController extends Controller
         $totalSaques = 0;
         $totalDepositos = 0;
         $array_movimentos = array();
+        $arrayDatas = array();
 
         foreach($contas as $conta){
             //vamos verificar o saldo inicial na moeda base
             $multi = 1;
-            if($conta->moeda != $aluno->moedaBase){
+            if($conta->moeda != $moedaBase){
                 $var = explode(' ', $conta->created_at);
                 $data = $var[0];
-                $resposta = $this->cotacaoMoeda($conta->moeda, $aluno->moedaBase, $data);
+                $resposta = $this->cotacaoMoeda($conta->moeda, $moedaBase, $data);
                 $multi = $resposta[0]['bid'];
             }
 
@@ -195,6 +244,14 @@ class FinanceiroAlunoController extends Controller
             $trades = Trade::where($dados_trade)->orderBy('dtHrSaida')->get();
 
             foreach($trades as $trade) {
+                //vamos verificar se essa data da trade já esta no array de datas
+                $var = explode(' ', $trade->dtHrSaida);
+                $var = $var[0];
+                $retorno = array_search($var, $arrayDatas);
+                if(empty($retorno) && $retorno !== 0){
+                    $arrayDatas[] = $var;
+                }
+
                 $movimento = array();
 
                 $var = explode(' ', $trade->dtHrSaida);
@@ -267,10 +324,97 @@ class FinanceiroAlunoController extends Controller
         }
         $drawndownCapMaxAtual = $vlSaldo - $capitalMaximo;
 
+        //vamos gerar os graficos de cada conta
+        // vamos organizar as contas o array por ordem cronologica
+        function cmpStrToTime($a, $b) {
+            return strtotime($a[0]) > strtotime($b[0]);
+        }
+
+        usort($arrayDatas, 'App\Http\Controllers\cmpStrToTime');
+        $arrayContasGrafico = array();
+
+        foreach($contas as $conta){
+            $arrayConta = array();
+
+            if($conta->moeda == "BRL"){
+                $moedaConta = "R$";
+            }
+            elseif($conta->moeda == "USD"){
+                $moedaConta = "US$";
+            }
+            elseif($conta->moeda == "EUR"){
+                $moedaConta = "€";
+            }
+            elseif($conta->moeda == "GBP"){
+                $moedaConta = "£";
+            }
+            elseif($conta->moeda == "JPY"){
+                $moedaConta = "¥$";
+            }
+
+            $arrayConta['nmConta'] = $conta->nmConta."($moedaConta)";
+
+            foreach($arrayDatas as $data){
+                $valor = 0;
+                //vamos descobrir o valor dessa conta nesta data
+                $trades = Trade::listarTradesExtratoConta($conta->id, $data);
+
+                foreach($trades as $trade) {
+
+                    if($trade->moeda == $conta->moeda){
+                        $valor += $trade->resPosicaoFinanceiro;
+                    }
+                    else{
+                        $multiplicador = 'cotacao'.$conta->moeda;
+                        $valor += $trade->resPosicaoFinanceiro * $trade->$multiplicador;
+                    }
+                }
+
+                $saquesDepositos = ContaSaqueDeposito::where('id_conta', $conta->id)->where('dtMovimento','<=',$data)->get();
+                foreach($saquesDepositos as $saqueDeposito){
+                    if($saqueDeposito->tpMovimento == "Saque"){
+                        $valor -= $saqueDeposito->vlMovimento;
+                    }
+                    else{
+                        $valor += $saqueDeposito->vlMovimento;
+                    }
+                }
+
+                $valor = $conta->vlContaInc + $valor;
+                $arrayConta[$data] = round($valor, 0);
+            }
+
+            $arrayContasGrafico[] = $arrayConta;
+        }
+
+        $series = "";
+        foreach($arrayContasGrafico as $grafico){
+            $dados = "";
+            foreach ($arrayDatas as $data) {
+                $dados .= ",".$grafico[$data];
+            }
+            $dados = substr($dados, 1);
+
+            $series .= ",
+                {
+                    name : '".$grafico['nmConta']."',
+                    data : [".$dados."]
+                }
+            ";
+        }
+
+        $series = substr($series, 1);
+        $categorias = "";
+        $coresGrafico = "'#B0C4DE','#20B2AA','#5F9EA0','#2E8B57','#DAA520','#F4A460','#D2B48C','#8B008B'";
+        foreach($arrayDatas as $data){
+            $categorias .= ",'".dataDbForm($data)."'";
+        }
+        $categorias = substr($categorias, 1);
+
         return view('acessoAluno/financeiro/extratoResumoGlobal',
             compact('array_extrato','totalDepositos','totalSaques',
             'capitalMaximo','drawndownCapIncAtual','drawndownCapMaxAtual','moeda',
-            'vlSaldo','vlSaldoInicial'));
+            'vlSaldo','vlSaldoInicial','series','categorias','coresGrafico','moedaNome'));
     }
 
     public function extratoContaGerarOld(Request $request){

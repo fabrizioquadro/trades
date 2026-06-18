@@ -20,14 +20,15 @@
                         <table class="table" id="table-index">
                             <thead>
                                 <tr>
+                                    <td><b>Favoritar<b></td>
                                     <td><b>Nome</b></td>
-                                    <td><b>Pais</b></td>
+                                    <td><b>País</b></td>
+                                    <td><b>Corretora</b></td>
                                     <td><b>Tipo</b></td>
                                     <td><b>Exchange</b></td>
-                                    <td><b>Simbolo</b></td>
+                                    <td><b>Símbolo</b></td>
                                     <td><b>Valor</b></td>
                                     <td><b>Situação</b></td>
-                                    <td><b></b></td>
                                 </tr>
                             </thead>
                             @foreach($ativos as $linha)
@@ -48,25 +49,34 @@
                             elseif($linha->moedaAtivo == "JPY"){
                                 $moeda = "¥$";
                             }
+
+                            $color = 'yellow';
+                            if(array_search($linha->id, $favoritos) === false){
+                                $color = 'white';
+                            }
                             @endphp
                               <tr>
-                                  <td>{{ $linha->nome }}</td>
-                                  <td>{{ $linha->pais }}</td>
-                                  <td>{{ $linha->tipoAtivo }}</td>
-                                  <td>{{ $linha->exchange }}</td>
-                                  <td>{{ $linha->simbolo }}</td>
-                                  <td>{{ $moeda." ".valorDbForm($linha->valor) }}</td>
-                                  <td>{{ $linha->stAtivo }}</td>
-                                  <td>
-                                    <div class="dropdown">
-                                      <button type="button" class="btn p-0 dropdown-toggle hide-arrow show" data-bs-toggle="dropdown" aria-expanded="true">
-                                        <i class="mdi mdi-dots-vertical"></i>
-                                      </button>
-                                      <div class="dropdown-menu" data-popper-placement="bottom-end" style="position: absolute; inset: 0px 0px auto auto; margin: 0px; transform: translate(-101.111px, 134.444px);">
-                                          <a class="dropdown-item waves-effect" href="{{ route('aluno.ativos.visualizar', $linha->id) }}"><i class="mdi mdi-eye-outline me-1"></i> Visualizar</a>
-                                      </div>
-                                    </div>
+                                  <td><span class="mdi mdi-star-circle-outline" id="estrela_{{ $linha->id }}" style="color:{{ $color }};" onclick="setarFavorito({{ $linha->id }})"></span></td>
+                                  <td style='cursor: pointer' onclick="redireciona({{ $linha->id }})">{{ $linha->nome }}</td>
+                                  <td style='cursor: pointer' onclick="redireciona({{ $linha->id }})">{{ $linha->pais }}</td>
+                                  <td style='cursor: pointer' onclick="redireciona({{ $linha->id }})">
+                                      @foreach($corretoras as $corretora)
+                                          @php
+                                          $checked = "";
+                                          $controle = testaCorretoraAtivo($linha->id, $corretora->id);
+                                          if($controle){
+                                              @endphp
+                                              {{ $corretora->nome }}
+                                              @php
+                                          }
+                                          @endphp
+                                      @endforeach
                                   </td>
+                                  <td style='cursor: pointer' onclick="redireciona({{ $linha->id }})">{{ $linha->tipoAtivo }}</td>
+                                  <td style='cursor: pointer' onclick="redireciona({{ $linha->id }})">{{ $linha->exchange }}</td>
+                                  <td style='cursor: pointer' onclick="redireciona({{ $linha->id }})">{{ $linha->simbolo }}</td>
+                                  <td style='cursor: pointer' onclick="redireciona({{ $linha->id }})">{{ $moeda." ".valorDbForm($linha->valor) }}</td>
+                                  <td style='cursor: pointer' onclick="redireciona({{ $linha->id }})">{{ $linha->stAtivo }}</td>
                               </tr>
                             @endforeach
                         </table>
@@ -77,9 +87,31 @@
     </div>
 </div>
 <script>
+function setarFavorito(ativo_id){
+    $.getJSON(
+        "{{ route('aluno.ativos.favorito') }}",
+        {
+            ativo_id : ativo_id
+        },
+        function(json){
+            if(json.controle == "Inserido"){
+                document.getElementById('estrela_' + ativo_id).style.color = 'yellow';
+            }
+            else{
+                document.getElementById('estrela_' + ativo_id).style.color = 'white';
+            }
+
+        }
+    );
+}
+
 window.addEventListener('load',()=>{
   $('#table-index').DataTable({
-    order: [[0, 'asc']],
+    order: [[1, 'asc']],
+    lengthMenu: [
+        [50, 100, -1],
+        [50, 100, 'All']
+    ],
     "language": {
 			"sEmptyTable": "Nenhum registro encontrado",
       "sInfo": "Mostrando de _START_ até _END_ de _TOTAL_ registros",
@@ -105,6 +137,10 @@ window.addEventListener('load',()=>{
     }
   });
 })
+
+function redireciona(id){
+    window.location.href = "{{ route('aluno.ativos.visualizar') }}/" + id;
+}
 
 </script>
 

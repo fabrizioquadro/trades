@@ -21,10 +21,9 @@
                         <table class="tabela-index" id="table-index">
                             <thead>
                                 <tr>
+                                    <th></th>
                                     <th style="text-align:left !important">Data</th>
                                     <th style="text-align:left !important">Nome</th>
-                                    <th>Visualização</th>
-                                    <th></th>
                                 </tr>
                             </thead>
                             @foreach($mensagens as $mensagem)
@@ -32,20 +31,19 @@
                               $var = explode(' ',$mensagem->dtHrMensagem);
                               $dtHrMensagem = dataDbForm($var[0])." ".$var[1];
                               @endphp
-                              <tr>
+                              <tr style='cursor: pointer' onclick="abrirMensagem({{ $mensagem->id_aluno }})">
+                                  <td>
+                                      @if($mensagem->stViewAdm == "Não")
+                                          <span style='display:none'>AA</span>
+                                          <img src="{{ asset('/public/img/IconsPng/Notificacoes.png') }}" height="25px" alt="">
+                                      @else
+                                          <span style='display:none'>ZZ</span>
+                                      @endif
+
+
+                                  </td>
                                   <td style="text-align:left !important"> <span style='display:none'>{{ strtotime($mensagem->dtHrMensagem) }}</span> {{ $dtHrMensagem }}</td>
                                   <td style="text-align:left !important">{{ $mensagem->nmAluno }}</td>
-                                  <td>{{ $mensagem->stViewAdm }}</td>
-                                  <td>
-                                    <div class="dropdown">
-                                      <button type="button" class="btn p-0 dropdown-toggle hide-arrow show" data-bs-toggle="dropdown" aria-expanded="true">
-                                        <i class="mdi mdi-dots-vertical"></i>
-                                      </button>
-                                      <div class="dropdown-menu" data-popper-placement="bottom-end" style="position: absolute; inset: 0px 0px auto auto; margin: 0px; transform: translate(-101.111px, 134.444px);">
-                                          <a class="dropdown-item waves-effect" href="{{ route('mensagens.aluno', $mensagem->id_aluno) }}"><i class="mdi mdi-eye-outline me-1"></i> Visualizar</a>
-                                      </div>
-                                    </div>
-                                  </td>
                               </tr>
                             @endforeach
                         </table>
@@ -58,7 +56,7 @@
 <script>
 window.addEventListener('load',()=>{
   $('#table-index').DataTable({
-    order: [[2, 'asc'],[0, 'asc']],
+    order: [[0, 'asc'],[1, 'desc'],[2, 'asc']],
     "language": {
 			"sEmptyTable": "Nenhum registro encontrado",
       "sInfo": "Mostrando de _START_ até _END_ de _TOTAL_ registros",
@@ -84,6 +82,10 @@ window.addEventListener('load',()=>{
     }
   });
 })
+
+function abrirMensagem(aluno_id){
+    window.location.href = "{{ route('mensagens.aluno') }}/" + aluno_id;
+}
 
 </script>
 

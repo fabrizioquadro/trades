@@ -15,8 +15,9 @@
                 <form action="{{ route('aluno.setarMoedaBase') }}" method="post">
                     @csrf
                     <div class="card-body">
-                        <div class="row align-items-end">
-                            <div class="col-md-6 form-group">
+                        <p>É a Moeda que todas as Contas e Trades serão convertidos para que a consolidação dos valores dos saldos e cálculos sejam uniformizados e compatíveis. Esta Moeda pode ser mudada a qualquer momento.</p>
+                        <div class="row align-items-center mt-4">
+                            <div class="col-md-10 form-group">
                                 <div class="form-floating form-floating-outline">
                                     <select id="moedaBase" name="moedaBase" required="" class="select2 form-select">
                                         <option value=''>Opções</option>
@@ -28,7 +29,7 @@
                                   <label for="moedaBase">Moeda Base:</label>
                                 </div>
                             </div>
-                            <div class="col-md-6 form-group">
+                            <div class="col-md-2 form-group">
                                 <button type="submit" class="btn btn-primary me-2">Salvar</button>
                             </div>
                         </div>
@@ -39,20 +40,21 @@
                 <form action="{{ route('aluno.setarPorcentagemLucroPrejuizo') }}" method="post">
                     @csrf
                     <div class="card-body">
-                        <div class="row align-items-end">
-                            <div class="col-md-4 form-group">
+                        <p class="mb-2">Este intervalo é considerado Neutro e os trades que estiverem dentro deste intervalo não serão considerados nem Lucro e nem Prejuízo. Estes parâmetros podem ser mudados a qualquer momento, porém só serão considerados nos novos Trades lançados a partir do momento que foram alterados. Para que os valores anteriores sejam reparametrizados, é necessário entrar em todos os Trades e Salvá-los novamente, um-a-um.</p>
+                        <div class="row align-items-center mt-4">
+                            <div class="col-md-5 form-group">
                                 <div class="form-floating form-floating-outline">
                                   <input required class="form-control" type="text" id="porcentagemPrejuizo" name="porcentagemPrejuizo" placeholder="Porcentagem Prejuizo" value='{{ valorDbForm($aluno->porcentagemPrejuizo) }}' onkeypress="return(MascaraMoeda(this,'.',',',event))"/>
-                                  <label for="porcentagemPrejuizo">Porcentagem Prejuizo:</label>
+                                  <label for="porcentagemPrejuizo">Porcentagem Prejuízo:</label>
                                 </div>
                             </div>
-                            <div class="col-md-4 form-group">
+                            <div class="col-md-5 form-group">
                                 <div class="form-floating form-floating-outline">
                                   <input required class="form-control" type="text" id="porcentagemLucro" name="porcentagemLucro" placeholder="Porcentagem Lucro" value='{{ valorDbForm($aluno->porcentagemLucro) }}' onkeypress="return(MascaraMoeda(this,'.',',',event))"/>
                                   <label for="porcentagemLucro">Porcentagem Lucro:</label>
                                 </div>
                             </div>
-                            <div class="col-md-4 form-group">
+                            <div class="col-md-2 form-group">
                                 <button type="submit" class="btn btn-primary me-2">Salvar</button>
                             </div>
                         </div>

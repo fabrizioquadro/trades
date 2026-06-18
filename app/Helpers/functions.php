@@ -4,6 +4,7 @@ use PHPMailer\PHPMailer\Exception;
 use App\Models\AtivoCorretora;
 use App\Models\Tag;
 use App\Models\Mensagen;
+use App\Models\Ticket;
 
 if(!function_exists('defineCorTendenciaMatriz')){
     function defineCorTendenciaMatriz($data){
@@ -81,6 +82,20 @@ if(!function_exists('verificaMensagensAdm')){
     }
 }
 
+if(!function_exists('verificaTicketAdm')){
+    function verificaTicketAdm(){
+        $dados = [
+            'stLidoAdm' => 'Não',
+        ];
+        if(Ticket::where($dados)->count() == 0){
+            return false;
+        }
+        else{
+            return true;
+        }
+    }
+}
+
 if(!function_exists('verificaMensagensAluno')){
     function verificaMensagensAluno(){
         $aluno = session()->get('aluno');
@@ -89,6 +104,22 @@ if(!function_exists('verificaMensagensAluno')){
             'stViewAluno' => 'Não',
         ];
         if(Mensagen::where($dados)->count() == 0){
+            return false;
+        }
+        else{
+            return true;
+        }
+    }
+}
+
+if(!function_exists('verificaTicketAluno')){
+    function verificaTicketAluno(){
+        $aluno = session()->get('aluno');
+        $dados = [
+            'aluno_id' => $aluno->id,
+            'stLidoAluno' => 'Não',
+        ];
+        if(Ticket::where($dados)->count() == 0){
             return false;
         }
         else{
@@ -142,7 +173,6 @@ if(!function_exists('createPassword')){
     }
 }
 
-
 if(!function_exists('dataDbForm')){
     function dataDbForm($data){
         $data = explode("-", $data);
@@ -151,7 +181,6 @@ if(!function_exists('dataDbForm')){
     }
 }
 
-
 if(!function_exists('dataFormDb')){
     function dataFormDb($data){
         $data = explode("/", $data);
@@ -159,7 +188,6 @@ if(!function_exists('dataFormDb')){
         return $data;
     }
 }
-
 
 if(!function_exists('valorFormDb')){
     function valorFormDb($valor){
@@ -180,13 +208,11 @@ if(!function_exists('valorFormDb')){
     }
 }
 
-
 if(!function_exists('valorDbForm')){
     function valorDbForm($valor){
         return number_format($valor,2,",",".");
     }
 }
-
 
 if(!function_exists('enviarMail')){
     function enviarMail($destinatario, $assunto, $mensagem){
@@ -197,14 +223,14 @@ if(!function_exists('enviarMail')){
             $mail->CharSet = "utf8";
             $mail->SMTPDebug = 0;
             $mail->isSMTP();
-            $mail->Host = 'smtp.hostinger.com';
+            $mail->Host = 'mail.smartmoneymetrics.co.uk';
             $mail->SMTPAuth = true;
-            $mail->Username = 'tiojoca@webpel.dev.br';
-            $mail->Password = 'P&dr0Quadr0';
+            $mail->Username = 'system@smartmoneymetrics.co.uk';
+            $mail->Password = 'Smart@metrics@2024';
             $mail->SMTPSecure = 'tls';
             $mail->Port = 587;
-            $mail->FromName = "Smart Money Makers";
-            $mail->From = "tiojoca@webpel.dev.br";
+            $mail->FromName = "Smart Money Metrics";
+            $mail->From = "system@smartmoneymetrics.co.uk";
             $mail->IsHTML(true);
             $mail->Subject = $assunto;
             $mail->Body = $mensagem;
@@ -223,7 +249,7 @@ if(!function_exists('calculaTempoOperacao')){
           $tempoHoras = intdiv($tempoSegundo, 3600);
           $resto = $tempoSegundo % 3600;
 
-          if($resto > 60){
+          if($resto >= 60){
               $tempoMinutos = intdiv($resto, 60);
           }
           else{

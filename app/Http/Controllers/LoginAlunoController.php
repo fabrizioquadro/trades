@@ -4,6 +4,8 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\Aluno;
+use App\Models\Agreements;
+use App\Models\LogAceiteTermos;
 
 class LoginAlunoController extends Controller
 {
@@ -21,7 +23,14 @@ class LoginAlunoController extends Controller
             if($aluno->dsSenha == $dsSenha && $aluno->stAluno == "Ativo"){
                 $request->session()->put('aluno', $aluno);
 
-                return redirect()->route('aluno.dashboard');
+                if($aluno->aceitePrivacyPolice && $aluno->aceiteCookiesPolice && $aluno->aceiteTermsAndConditions && $aluno->aceiteNonDisclosure && $aluno->aceiteRiskWarning){
+                    return redirect()->route('aluno.dashboard');
+                }
+                else{
+                    return redirect()->route('aluno.aceitarTermosCumplice');
+                }
+
+
             }
             else{
                 return redirect()->back()->with('mensagem', "Senha Inválido ou aluno inativo.");
@@ -72,5 +81,109 @@ class LoginAlunoController extends Controller
         return redirect()->route('aluno.index');
     }
 
+    public function aceitarTermosCumplice($controle = 'true'){
+        $aluno = session()->get('aluno');
+        $agreements = Agreements::where('id', 1)->first();
 
+        return view('login/aceitarTermosCumplice', compact('controle','agreements','aluno'));
+    }
+
+    public function aceitarTermosCumpliceSet(Request $request){
+        $aluno = session()->get('aluno');
+        $agreements = Agreements::where('id', 1)->first();
+
+        $dados_log = [
+            'aluno_id' => $aluno->id,
+        ];
+
+        $mensagem = "
+
+        <h2>Obrigado por ter aceitado as Políticas da Smart Money Makers e Smart Money Metrics App</h2>
+        <p>
+            Seguem as políticas assinadas para o seu arquivo.
+        </p>
+        <hr>
+        <div style='background-color: #30334e; padding: 10px 50px 20px;'>
+            $agreements->termosPrivacyPolicy
+            <hr>
+            $agreements->cookiesPolicy
+            <hr>
+            $agreements->termsAndConditions
+            <hr>
+            $agreements->nonDisclosure
+            <hr>
+            $agreements->riskWarning
+        </div>
+        ";
+
+        if($request->get('aceiteTermosPrivacyPolicy') == 'sim'){
+            //vamos registrar o log
+            $dados_log['tpAceite'] = 'PrivacyPolicy';
+            LogAceiteTermos::create($dados_log);
+
+            $aluno->aceitePrivacyPolice = true;
+            $aluno->dataPrivacyPolice = date('Y-m-d H:i:s');
+        }
+
+        if($request->get('aceiteCookiesPolicy') == 'sim'){
+            //vamos registrar o log
+            $dados_log['tpAceite'] = 'CookiesPolicy';
+            LogAceiteTermos::create($dados_log);
+
+            $aluno->aceiteCookiesPolice = true;
+            $aluno->dataCookiesPolice = date('Y-m-d H:i:s');
+        }
+
+        if($request->get('termsAndConditions') == 'sim'){
+            //vamos registrar o log
+            $dados_log['tpAceite'] = 'TermsAndConditions';
+            LogAceiteTermos::create($dados_log);
+
+            $aluno->aceiteTermsAndConditions = true;
+            $aluno->dataTermsAndConditions = date('Y-m-d H:i:s');
+        }
+
+        if($request->get('nonDisclosure') == 'sim'){
+            //vamos registrar o log
+            $dados_log['tpAceite'] = 'NonDisclosure';
+            LogAceiteTermos::create($dados_log);
+
+            $aluno->aceiteNonDisclosure = true;
+            $aluno->dataNonDisclosure = date('Y-m-d H:i:s');
+        }
+
+        if($request->get('riskWarning') == 'sim'){
+            //vamos registrar o log
+            $dados_log['tpAceite'] = 'RiskWarning';
+            LogAceiteTermos::create($dados_log);
+
+            $aluno->aceiteRiskWarning = true;
+            $aluno->dataRiskWarning = date('Y-m-d H:i:s');
+        }
+
+        if($request->get('dsSenha')){
+            $aluno->dsSenha = md5($request->get('dsSenha'));
+            $aluno->setarNovaSenha = true;
+        }
+
+        $aluno->save();
+
+        enviarMail($aluno->dsEmail,'Políticas de Compliance da Smart Money Makers', $mensagem);
+
+        return redirect()->route('aluno.dashboard');
+    }
+
+    public function excluirConta(){
+        return view('login/excluirContaAluno');
+    }
+
+    public function excluirContaDelete(Request $request){
+        if($request->get('acao')){
+            $aluno = session()->get('aluno');
+            $aluno->stAluno = "Inativo";
+            $aluno->save();
+
+            return redirect()->route('aluno.logout');
+        }
+    }
 }

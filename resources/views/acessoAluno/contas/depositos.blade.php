@@ -11,7 +11,12 @@
         <div class="card-body">
             <div class="row mb-3">
                 <div class="col-md-6">
-                    <h5 class="card-title">Depósitos Conta: {{ $conta->nrConta }} - {{ $conta->nmConta }}</h5>
+                    <div class="d-flex justify-content-start align-items-center">
+                        <a href="javascript:history.back()" title="Voltar" style="margin-right: 20px">
+                            <img src="{{ asset('/public/img/IconsPng/Voltar.png') }}" height="50px" alt="">
+                        </a>
+                        <h5 class="card-title">Depósitos Conta: {{ $conta->nrConta }} - {{ $conta->nmConta }}</h5>
+                    </div>
                 </div>
                 <div class="col-md-6" align='right'>
                     <a href="{{ route('aluno.contas.deposito.adicionar', $conta->id)}}" class="dt-button add-new btn btn-primary" type="button">
@@ -49,7 +54,7 @@
                                         <i class="mdi mdi-dots-vertical"></i>
                                       </button>
                                       <div class="dropdown-menu" data-popper-placement="bottom-end" style="position: absolute; inset: 0px 0px auto auto; margin: 0px; transform: translate(-101.111px, 134.444px);">
-                                          <a class="dropdown-item waves-effect" href="{{ route('aluno.contas.deposito.excluir', $linha->id) }}"><i class="mdi mdi-trash-can-outline me-1"></i> Excluir</a>
+                                          <a class="dropdown-item waves-effect" href="{{ route('aluno.contas.deposito.excluir', $linha->id) }}"><img src="{{ asset('/public//img/IconsPng/Excluir.png') }}" height="35px" alt="" style="margin-right: 10px"> Excluir</a>
                                       </div>
                                     </div>
                                   </td>

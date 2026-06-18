@@ -57,6 +57,9 @@ return new class extends Migration
             $table->double('cotacaoEUR')->nullable();
             $table->double('cotacaoGBP')->nullable();
             $table->double('cotacaoJPY')->nullable();
+            $table->string('analiseMentor')->nullable();
+            $table->string('aprovacaoMentor')->nullable();
+            $table->text('obsMentor')->nullable();
             $table->foreign('id_aluno')->references('id')->on('alunos');
             $table->foreign('id_corretora')->references('id')->on('corretoras');
             $table->foreign('id_conta')->references('id')->on('contas');

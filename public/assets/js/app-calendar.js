@@ -45,8 +45,7 @@ document.addEventListener('DOMContentLoaded', function () {
       eventDescription = document.querySelector('#eventDescription'),
       allDaySwitch = document.querySelector('.allDay-switch'),
       selectAll = document.querySelector('.select-all'),
-      filterInput = [].slice.call(document.querySelectorAll('.input-filter')),
-      inlineCalendar = document.querySelector('.inline-calendar');
+      filterInput = [].slice.call(document.querySelectorAll('.input-filter'));
 
     let eventToUpdate,
       currentEvents = events, // Assign app-calendar-events.js file events (assume events from API) to currentEvents (browser store/object) to manage and update calender events
@@ -137,14 +136,6 @@ document.addEventListener('DOMContentLoaded', function () {
             instance.mobileInput.setAttribute('step', null);
           }
         }
-      });
-    }
-
-    // Inline sidebar calendar (flatpicker)
-    if (inlineCalendar) {
-      inlineCalInstance = inlineCalendar.flatpickr({
-        monthSelectorType: 'static',
-        inline: true
       });
     }
 
@@ -278,6 +269,7 @@ document.addEventListener('DOMContentLoaded', function () {
         return ['fc-event-' + colorName];
       },
       dateClick: function (info) {
+          console.log('data Click');
         let date = moment(info.date).format('YYYY-MM-DD');
         resetValues();
         bsAddEventSidebar.show();
@@ -294,6 +286,7 @@ document.addEventListener('DOMContentLoaded', function () {
         eventEndDate.value = date;
       },
       eventClick: function (info) {
+          console.log('evento click');
         eventClick(info);
       },
       datesSet: function () {

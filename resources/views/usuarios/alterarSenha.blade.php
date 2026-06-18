@@ -9,7 +9,12 @@
           <div class="col-md-6">
             <div class="card mb-4">
               <div class="card-body pt-2 mt-1">
-                  <h4 class="card-header">Alterar Senha - {{ $usuario->nome }}</h4>
+                  <div class="d-flex justify-content-start align-items-center">
+                      <a href="javascript:history.back()" title="Voltar" style="margin-right: 20px">
+                          <img src="{{ asset('/public/img/IconsPng/Voltar.png') }}" height="50px" alt="">
+                      </a>
+                      <h4 class="card-header">Alterar Senha - {{ $usuario->nome }}</h4>
+                  </div>
                   <div class="row mt-2 gy-4">
                     <div class="col-md-12">
                       <div class="form-floating form-floating-outline">

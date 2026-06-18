@@ -4,9 +4,14 @@
 <div class="container-xxl flex-grow-1 container-p-y">
     <div class="card">
         <div class="card-body">
+            <div class="d-flex justify-content-start align-items-center">
+                <a href="javascript:history.back()" title="Voltar" style="margin-right: 20px">
+                    <img src="{{ asset('/public/img/IconsPng/Voltar.png') }}" height="50px" alt="">
+                </a>
+                <h5 class="card-title">Editar Usuário</h5>
+            </div>
             <div class="row">
                 <div class="col-md-6">
-                    <h5 class="card-title">Editar Usuário</h5>
                 </div>
             </div>
             <form action="{{ route('usuarios.update') }}" method="post" enctype="multipart/form-data">

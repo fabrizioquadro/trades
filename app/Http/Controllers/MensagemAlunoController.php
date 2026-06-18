@@ -11,7 +11,7 @@ class MensagemAlunoController extends Controller
         $aluno = session()->get('aluno');
 
         //vamos buscar as mensagens do aluno
-        $mensagens = Mensagen::where('id_aluno', $aluno->id)->orderByDesc('dtHrMensagem')->get();
+        $mensagens = Mensagen::where('id_aluno', $aluno->id)->orderBy('dtHrMensagem')->get();
 
         //vamos marcar todas as mensagens como lidas
         Mensagen::where('id_aluno', $aluno->id)->update(['stViewAluno' => 'Sim']);

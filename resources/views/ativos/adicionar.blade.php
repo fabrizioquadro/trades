@@ -4,10 +4,11 @@
 <div class="container-xxl flex-grow-1 container-p-y">
     <div class="card">
         <div class="card-body">
-            <div class="row">
-                <div class="col-md-6">
-                    <h5 class="card-title">Adicionar Ativo</h5>
-                </div>
+            <div class="d-flex justify-content-start align-items-center">
+                <a href="javascript:history.back()" title="Voltar" style="margin-right: 20px">
+                    <img src="{{ asset('/public/img/IconsPng/Voltar.png') }}" height="50px" alt="">
+                </a>
+                <h5 class="card-title">Adicionar Ativo</h5>
             </div>
             <form action="{{ route('ativos.insert') }}" method="post">
               @csrf
@@ -17,6 +18,7 @@
                     <select required id="id_tipoAtivo" name='tipoAtivo' class="select2 form-select">
                       <option value="">Opções</option>
                       <option value="Índices">Índices</option>
+                      <option value="Índice CFD">Índice CFD</option>
                       <option value="CFDs">CFDs</option>
                       <option value="Ações">Ações</option>
                       <option value="Forex">Forex</option>
@@ -43,6 +45,7 @@
                       <option value="EUA">EUA</option>
                       <option value="EUR">EUR</option>
                       <option value="UK">UK</option>
+                      <option value="INT">INT</option>
                       <option value="Cryptos">Cryptos</option>
                     </select>
                     <label for="id_pais">País:</label>
@@ -111,7 +114,7 @@
               <div class="row mt-2 gy-4">
                 <div class="col-md-6">
                   <div class="form-floating form-floating-outline">
-                    <input required class="form-control" type="text" id="tamanhoContrato" name="tamanhoContrato" placeholder="Tamanho Contrato"/>
+                    <input class="form-control" type="text" id="tamanhoContrato" name="tamanhoContrato" placeholder="Tamanho Contrato"/>
                     <label for="tamanhoContrato">Tamanho Contrato:</label>
                   </div>
                 </div>
@@ -125,8 +128,8 @@
               <div class="row mt-2 gy-4">
                 <div class="col-md-3">
                   <div class="form-floating form-floating-outline">
-                    <input required class="form-control" type="text" id="valor" name="valor" placeholder="Valor" onkeypress="return(MascaraMoeda(this,'.',',',event))"/>
-                    <label for="valor">Valor:</label>
+                    <input class="form-control" type="text" id="valor" name="valor" placeholder="Valor por Ponto Moeda Ativo" onkeypress="return(MascaraMoeda(this,'.',',',event))"/>
+                    <label for="valor">Valor por Ponto Moeda Ativo:</label>
                   </div>
                 </div>
                 <div class="col-md-3">

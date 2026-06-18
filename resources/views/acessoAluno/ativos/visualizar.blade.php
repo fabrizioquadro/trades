@@ -19,13 +19,22 @@ elseif($ativo->moedaAtivo == "JPY"){
     $moeda = "¥$";
 }
 @endphp
+<style media="screen">
+table, tr, td, th{
+    font-size: 14px !important;
+    vertical-align: bottom !important;
+    text-align: left !important;
+    text-transform: none !important;
+}
+</style>
 <div class="container-xxl flex-grow-1 container-p-y">
     <div class="card">
         <div class="card-body">
-            <div class="row">
-                <div class="col-md-6">
-                    <h5 class="card-title">Visualizar Ativo</h5>
-                </div>
+            <div class="d-flex justify-content-start align-items-center">
+                <a href="javascript:history.back()" title="Voltar" style="margin-right: 20px">
+                    <img src="{{ asset('/public/img/IconsPng/Voltar.png') }}" height="50px" alt="">
+                </a>
+                <h5 class="card-title mb-0">Visualizar Ativo</h5>
             </div>
               <div class="row mt-2 gy-4">
                 <div class="col-md-4">
@@ -33,7 +42,7 @@ elseif($ativo->moedaAtivo == "JPY"){
                     <span>{{ $ativo->tipoAtivo }}</span>
                 </div>
                 <div class="col-md-4">
-                    <span class="fw-medium">Pais:</span><br>
+                    <span class="fw-medium">País:</span><br>
                     <span>{{ $ativo->pais }}</span>
                 </div>
                 <div class="col-md-4">
@@ -51,11 +60,11 @@ elseif($ativo->moedaAtivo == "JPY"){
                     <span>{{ $ativo->exchange }}</span>
                 </div>
                 <div class="col-md-2">
-                    <span class="fw-medium">Simbolo:</span><br>
+                    <span class="fw-medium">Símbolo:</span><br>
                     <span>{{ $ativo->simbolo }}</span>
                 </div>
                 <div class="col-md-2">
-                    <span class="fw-medium">CQG Simbolo:</span><br>
+                    <span class="fw-medium">CQG Símbolo:</span><br>
                     <span>{{ $ativo->cqgSimbolo }}</span>
                 </div>
               </div>
@@ -79,11 +88,11 @@ elseif($ativo->moedaAtivo == "JPY"){
                     <span>{{ $moeda." ".valorDbForm($ativo->tick) }}</span>
                 </div>
                 <div class="col-md-3">
-                    <span class="fw-medium">Swing:</span><br>
+                    <span class="fw-medium">Margem Swing:</span><br>
                     <span>{{ $moeda." ".valorDbForm($ativo->swing) }}</span>
                 </div>
                 <div class="col-md-3">
-                    <span class="fw-medium">Day Trading:</span><br>
+                    <span class="fw-medium">Margem Day Trading:</span><br>
                     <span>{{ $moeda." ".valorDbForm($ativo->dayTrading) }}</span>
                 </div>
               </div>
@@ -91,11 +100,6 @@ elseif($ativo->moedaAtivo == "JPY"){
                   <div class="card-body">
                     <h6 class="card-title">Corretoras</h6>
                     <table class='table table-sm'>
-                        <thead>
-                            <tr>
-                                <th>Nome</th>
-                            </tr>
-                        </thead>
                         <tbody>
                             @foreach($corretoras as $corretora)
                                 @php
@@ -112,6 +116,11 @@ elseif($ativo->moedaAtivo == "JPY"){
                             @endforeach
                         </tbody>
                     </table>
+                  </div>
+              </div>
+              <div class="row mt-4">
+                  <div class="col md-12">
+
                   </div>
               </div>
         </div>

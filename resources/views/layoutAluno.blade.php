@@ -5,7 +5,7 @@
   class="light-style layout-navbar-fixed layout-menu-fixed layout-compact"
   dir="ltr"
   data-theme="theme-default"
-  data-assets-path="/public/assets/"
+  data-assets-path="{{ asset('/public/assets/').'/' }}"
   data-template="vertical-menu-template">
   <head>
     <meta charset="utf-8" />
@@ -42,20 +42,30 @@
     <!-- Vendors CSS -->
     <link rel="stylesheet" href="{{ asset('/public/assets/vendor/libs/perfect-scrollbar/perfect-scrollbar.css') }}" />
     <link rel="stylesheet" href="{{ asset('/public/assets/vendor/libs/typeahead-js/typeahead.css') }}" />
+    <link rel="stylesheet" href="{{ asset('/public/assets/vendor/libs/jkanban/jkanban.css') }}" />
+    <link rel="stylesheet" href="{{ asset('/public/assets/vendor/libs/fullcalendar/fullcalendar.css') }}" />
+    <link rel="stylesheet" href="{{ asset('/public/assets/vendor/libs/flatpickr/flatpickr.css') }}" />
+    <link rel="stylesheet" href="{{ asset('/public/assets/vendor/libs/quill/typography.css') }}" />
+    <link rel="stylesheet" href="{{ asset('/public/assets/vendor/libs/quill/katex.css') }}" />
+    <link rel="stylesheet" href="{{ asset('/public/assets/vendor/libs/select2/select2.css') }}" />
+    <link rel="stylesheet" href="{{ asset('/public/assets/vendor/libs/quill/editor.css') }}" />
     <link rel="stylesheet" href="{{ asset('/public/assets/vendor/libs/apex-charts/apex-charts.css') }}" />
     <link rel="stylesheet" href="{{ asset('/public/assets/vendor/libs/swiper/swiper.css') }}" />
 
     <!-- Page CSS -->
     <link rel="stylesheet" href="{{ asset('/public/assets/vendor/css/pages/cards-statistics.css') }}" />
     <link rel="stylesheet" href="{{ asset('/public/assets/vendor/css/pages/cards-analytics.css') }}" />
+    <link rel="stylesheet" href="{{ asset('/public/assets/vendor/css/pages/app-kanban.css') }}" />
     <link href="https://cdn.datatables.net/1.10.19/css/jquery.dataTables.min.css" rel="stylesheet">
     <link rel="stylesheet" href="{{ asset('/public/css/bootstrap-combobox.css') }}" />
+    <link rel="stylesheet" href="https://cdn.ckeditor.com/ckeditor5/42.0.0/ckeditor5.css" />
 
     <link rel="stylesheet" href="{{ asset('/public/assets/vendor/libs/datatables-bs5/datatables.bootstrap5.css') }}" />
     <link rel="stylesheet" href="{{ asset('/public/assets/vendor/libs/datatables-responsive-bs5/responsive.bootstrap5.css') }}" />
     <link rel="stylesheet" href="{{ asset('/public/assets/vendor/libs/datatables-checkboxes-jquery/datatables.checkboxes.css') }}" />
     <link rel="stylesheet" href="{{ asset('/public/assets/vendor/libs/datatables-buttons-bs5/buttons.bootstrap5.css') }}" />
     <link rel="stylesheet" href="{{ asset('/public/assets/vendor/libs/datatables-rowgroup-bs5/rowgroup.bootstrap5.css') }}" />
+    <link rel="stylesheet" href="{{ asset('/public/assets/vendor/css/pages/app-calendar.css') }}" />
 
     <!-- Helpers -->
     <script src="{{ asset('/public/assets/vendor/js/helpers.js') }}"></script>
@@ -65,6 +75,7 @@
     <script src="{{ asset('/public/assets/vendor/libs/apex-charts/apexcharts.js') }}"></script>
     <!--? Config:  Mandatory theme config file contain global vars & default theme options, Set your preferred theme option in this file.  -->
     <script src="{{ asset('/public/assets/js/config.js') }}"></script>
+    <script src="{{ asset('/public/assets/vendor/libs/sortablejs/sortable.js') }}"></script>
 
     <style>
 
@@ -78,8 +89,8 @@
 
     table, tr, td, th{
         border:none !important;
-        font-size: 8px !important;
-        vertical-align: bottom !important;
+        font-size: 14px !important;
+        vertical-align: middle !important;
         text-align: center !important;
         text-transform: none !important;
     }
@@ -100,11 +111,11 @@
     }
 
     .fontSize12{
-        font-size: 18px !important;
+        font-size: 36px !important;
     }
 
     .fontSize25{
-        font-size: 25px !important;
+        font-size: 30px !important;
     }
 
     .input-group-text{
@@ -113,11 +124,15 @@
         border-bottom-left-radius: 0px;
     }
 
+    a.menu-link::before {
+        content: none !important;
+    }
+
     @media (max-width: 768px){
         table, tr, td, th{
             border:none !important;
-            font-size: 18px !important;
-            vertical-align: bottom !important;
+            font-size: 12px !important;
+            vertical-align: middle !important;
             text-align: center !important;
             text-transform: none !important;
         }
@@ -140,7 +155,7 @@
             <a href="{{ route('aluno.dashboard') }}" class="app-brand-link">
               <span class="app-brand-logo demo">
                 <span style="color: var(--bs-primary)">
-                    <img src="{{ asset('/public/img/logoNaoCompleto.png') }}" style='height: 60px' alt="">
+                    <img src="{{ asset('/public/img/logoCompleto.png') }}" style='height: 60px' alt="">
                 </span>
               </span>
               <!-- <span class="app-brand-text demo menu-text fw-bold ms-2">SmartMoneyMakers</span> -->
@@ -163,37 +178,79 @@
           <div class="menu-inner-shadow"></div>
 
           <ul class="menu-inner py-1">
+              <li class="menu-item">
+                <a href="javascript:void(0);" class="menu-link menu-toggle waves-effect">
+                  <img src="{{ asset('/public/img/IconsPng/Dashboard Mercado.png') }}" height="40px" alt="" style="margin-right: 10px">
+                  <div data-i18n="Dashboard Mercado">Dashboard Mercado</div>
+                </a>
+                <ul class="menu-sub">
+                  <li class="menu-item">
+                    <a href="{{ route('aluno.dashboard.mercado.stocks') }}" class="menu-link">
+                        <img src="{{ asset('/public/img/IconsPng/Dashboard Stocks.png') }}" height="40px" alt="" style="margin-right: 10px">
+                        <div data-i18n="Stocks">Stocks</div>
+                    </a>
+                  </li>
+                  <li class="menu-item">
+                    <a href="{{ route('aluno.dashboard.mercado.forex') }}" class="menu-link">
+                        <img src="{{ asset('/public/img/IconsPng/Dashboard Forex.png') }}" height="40px" alt="" style="margin-right: 10px">
+                        <div data-i18n="Forex">Forex</div>
+                    </a>
+                  </li>
+                  <li class="menu-item">
+                    <a href="{{ route('aluno.dashboard.mercado.cryptos') }}" class="menu-link">
+                        <img src="{{ asset('/public/img/IconsPng/Dashboard Cryptos.png') }}" height="40px" alt="" style="margin-right: 10px">
+                        <div data-i18n="Cryptos">Cryptos</div>
+                    </a>
+                  </li>
+                  <li class="menu-item">
+                    <a href="{{ route('aluno.dashboard.mercado.worldIndex') }}" class="menu-link">
+                        <img src="{{ asset('/public/img/IconsPng/Dashboard World Indexes.png') }}" height="40px" alt="" style="margin-right: 10px">
+                        <div data-i18n="World Index">World Index</div>
+                    </a>
+                  </li>
+                </ul>
+              </li>
             <li class="menu-item">
               <a href="{{ route('aluno.dashboard') }}" class="menu-link">
-                <img src="{{ asset('/public/img/Icons/Dashboard.svg') }}" height="40px" alt="" style="margin-right: 10px">
+                <img src="{{ asset('/public/img/IconsPng/Dashboard.png') }}" height="40px" alt="" style="margin-right: 10px">
                 <div data-i18n="Dashboard">Dashboard</div>
               </a>
             </li>
             <li class="menu-item">
               <a href="{{ route('aluno.matrizDecisao') }}" class="menu-link">
-                <img src="{{ asset('/public/img/Icons/Matriz Decisao.svg') }}" height="40px" alt="" style="margin-right: 10px">
+                <img src="{{ asset('/public/img/IconsPng/Matriz Decisao.png') }}" height="40px" alt="" style="margin-right: 10px">
                 <div data-i18n="Matriz Decisão">Matriz Decisão</div>
               </a>
             </li>
+            <li class="menu-item">
+              <a href="{{ route('aluno.notes') }}" class="menu-link">
+                <img src="{{ asset('/public/img/IconsPng/Mensagens 2.png') }}" height="40px" alt="" style="margin-right: 10px">
+                <div data-i18n="Notes">Notes</div>
+              </a>
+            </li>
+            {{--
             <li class="menu-item">
               <a href="{{ route('aluno.contas') }}" class="menu-link">
                 <img src="{{ asset('/public/img/Icons/Contas1.svg') }}" height="40px" alt="" style="margin-right: 10px">
                 <div data-i18n="Contas/Corretoras">Contas/Corretoras</div>
               </a>
             </li>
+            --}}
             <li class="menu-item" style="">
               <a href="javascript:void(0);" class="menu-link menu-toggle waves-effect">
-                <img src="{{ asset('/public/img/Icons/Financeiro.svg') }}" height="40px" alt="" style="margin-right: 10px">
+                <img src="{{ asset('/public/img/IconsPng/Financeiro.png') }}" height="40px" alt="" style="margin-right: 10px">
                 <div data-i18n="Financeiro">Financeiro</div>
               </a>
               <ul class="menu-sub">
                 <li class="menu-item">
                   <a href="{{ route('aluno.financeiro.extratoConta') }}" class="menu-link">
+                    <img src="{{ asset('/public/img/IconsPng/Extrato Contas.png') }}" height="40px" alt="" style="margin-right: 10px">
                     <div data-i18n="Extrato Conta">Extrato Conta</div>
                   </a>
                 </li>
                 <li class="menu-item">
                   <a href="{{ route('aluno.financeiro.resumoGlobal') }}" class="menu-link">
+                    <img src="{{ asset('/public/img/IconsPng/Resumo Financeiro Global.png') }}" height="40px" alt="" style="margin-right: 10px">
                     <div data-i18n="Resumo Global">Resumo Global</div>
                   </a>
                 </li>
@@ -201,41 +258,132 @@
             </li>
             <li class="menu-item">
               <a href="{{ route('aluno.ativos') }}" class="menu-link">
-                <img src="{{ asset('/public/img/Icons/Ativos.svg') }}" height="40px" alt="" style="margin-right: 10px">
+                <img src="{{ asset('/public/img/IconsPng/Ativos.png') }}" height="40px" alt="" style="margin-right: 10px">
                 <div data-i18n="Ativos">Ativos</div>
               </a>
             </li>
             <li class="menu-item">
               <a href="{{ route('aluno.trades') }}" class="menu-link">
-                <img src="{{ asset('/public/img/Icons/Trades.svg') }}" height="40px" alt="" style="margin-right: 10px">
+                <img src="{{ asset('/public/img/IconsPng/Trades.png') }}" height="40px" alt="" style="margin-right: 10px">
                 <div data-i18n="Trades">Trades</div>
               </a>
             </li>
             <li class="menu-item">
               <a href="{{ route('aluno.resultados') }}" class="menu-link">
-                <img src="{{ asset('/public/img/Icons/OnePageReport.svg') }}" height="40px" alt="" style="margin-right: 10px">
+                <img src="{{ asset('/public/img/IconsPng/One page Report.png') }}" height="40px" alt="" style="margin-right: 10px">
                 <div data-i18n="One Page Report">One Page Report</div>
               </a>
             </li>
             <li class="menu-item">
+              <a href="{{ route('aluno.consistence') }}" class="menu-link">
+                <img src="{{ asset('/public/img/IconsPng/Consistency Diamond.png') }}" height="40px" alt="" style="margin-right: 10px">
+                <div data-i18n="Consistency Diamond">Consistency Diamond</div>
+              </a>
+            </li>
+            <li class="menu-item" style="">
+              <a href="javascript:void(0);" class="menu-link menu-toggle waves-effect">
+                <img src="{{ asset('/public/img/IconsPng/Diamond 2.png') }}" height="40px" alt="" style="margin-right: 10px">
+                <div data-i18n="Diamond Tasks Board">Diamond Tasks Board</div>
+              </a>
+              <ul class="menu-sub">
+                <li class="menu-item">
+                  <a href="{{ route('aluno.taskManager') }}" class="menu-link">
+                    <img src="{{ asset('/public/img/IconsPng/Task Manager.png') }}" height="40px" alt="" style="margin-right: 10px">
+                    <div data-i18n="Trade Plan Compliance">Trade Plan Compliance</div>
+                  </a>
+                </li>
+                <li class="menu-item">
+                  <a href="{{ route('aluno.kanban') }}" class="menu-link">
+                    <img src="{{ asset('/public/img/IconsPng/Kambam.png') }}" height="40px" alt="" style="margin-right: 10px">
+                    <div data-i18n="Kanban">Kanban</div>
+                  </a>
+                </li>
+                <li class="menu-item">
+                  <a href="{{ route('aluno.actionPlan') }}" class="menu-link">
+                    <img src="{{ asset('/public/img/IconsPng/Action Plan.png') }}" height="40px" alt="" style="margin-right: 10px">
+                    <div data-i18n="Action Plan">Action Plan</div>
+                  </a>
+                </li>
+              </ul>
+            </li>
+            <li class="menu-item">
+              <a href="{{ route('aluno.planTrade') }}" class="menu-link">
+                <img src="{{ asset('/public/img/IconsPng/Plano de Trade.png') }}" height="40px" alt="" style="margin-right: 10px">
+                <div data-i18n="Planos de Trades">Planos de Trades</div>
+              </a>
+            </li>
+            <li class="menu-item">
               <a href="{{ route('aluno.mensagens') }}" class="menu-link">
-                <img src="{{ asset('/public/img/Icons/Mensagens.svg') }}" height="40px" alt="" style="margin-right: 10px">
+                <img src="{{ asset('/public/img/IconsPng/Mensagens.png') }}" height="40px" alt="" style="margin-right: 10px">
                 <div data-i18n="Mensagens">Mensagens</div>
               </a>
             </li>
             <li class="menu-item">
               <a href="{{ route('aluno.tutoriais') }}" class="menu-link">
-                <img src="{{ asset('/public/img/Icons/Tutoriais.svg') }}" height="40px" alt="" style="margin-right: 10px">
+                <img src="{{ asset('/public/img/IconsPng/Tutoriais.png') }}" height="40px" alt="" style="margin-right: 10px">
                 <div data-i18n="Tutoriais">Tutoriais</div>
               </a>
             </li>
             <li class="menu-item">
               <a href="{{ route('aluno.faq') }}" class="menu-link">
-                <img src="{{ asset('/public/img/Icons/PerguntasFrequentes.svg') }}" height="40px" alt="" style="margin-right: 10px">
-                <div data-i18n="FAQ">FAQ</div>
+                <img src="{{ asset('/public/img/IconsPng/Perguntas Frequentes.png') }}" height="40px" alt="" style="margin-right: 10px">
+                <div data-i18n="FAQ/Ticket">FAQ/Ticket</div>
               </a>
             </li>
-
+            <li class="menu-item" style="">
+              <a href="javascript:void(0);" class="menu-link menu-toggle waves-effect">
+                <img src="{{ asset('/public/img/IconsPng/Agreements.png') }}" height="40px" alt="" style="margin-right: 10px">
+                <div data-i18n="Agreements">Agreements</div>
+              </a>
+              <ul class="menu-sub">
+                <li class="menu-item">
+                  <a href="{{ route('aluno.termosPrivacyPolicy') }}" class="menu-link">
+                    <img src="{{ asset('/public/img/IconsPng/Privacy Policy 2.png') }}" height="40px" alt="" style="margin-right: 10px">
+                    <div data-i18n="Privacy Policy">Privacy Policy</div>
+                  </a>
+                </li>
+                <li class="menu-item">
+                  <a href="{{ route('aluno.cookiesPolicy') }}" class="menu-link">
+                    <img src="{{ asset('/public/img/IconsPng/Cookies Policy.png') }}" height="40px" alt="" style="margin-right: 10px">
+                    <div data-i18n="Cookies Policy">Cookies Policy</div>
+                  </a>
+                </li>
+                <li class="menu-item">
+                  <a href="{{ route('aluno.termsAndConditions') }}" class="menu-link">
+                    <img src="{{ asset('/public/img/IconsPng/Terms Conditions.png') }}" height="40px" alt="" style="margin-right: 10px">
+                    <div data-i18n="Terms and Conditions">Terms and Conditions</div>
+                  </a>
+                </li>
+                <li class="menu-item">
+                  <a href="{{ route('aluno.nonDisclosure') }}" class="menu-link">
+                    <img src="{{ asset('/public/img/IconsPng/Non-Disclosure.png') }}" height="40px" alt="" style="margin-right: 10px">
+                    <div data-i18n="End User License Agreement - EULA">End User License Agreement - EULA</div>
+                  </a>
+                </li>
+                <li class="menu-item">
+                  <a href="{{ route('aluno.riskWarning') }}" class="menu-link">
+                    <img src="{{ asset('/public/img/IconsPng/Risk Warning.png') }}" height="40px" alt="" style="margin-right: 10px">
+                    <div data-i18n="Risk Warning / Risk Disclosure ">Risk Warning / Risk Disclosure </div>
+                  </a>
+                </li>
+              </ul>
+            </li>
+            <li class="menu-item" align='center' style="margin-top: 100px">
+                <div>
+                    <a href="https://www.youtube.com/@smartmoneymarkers?sub_confirmation=1" target="_blank">
+                      <img src="{{ asset('/public/img/IconsPng/Youtube.png') }}" height="50px" alt="">
+                    </a>
+                    <a href="https://www.instagram.com/smartmoneymakersglobal/" target="_blank">
+                      <img src="{{ asset('/public/img/IconsPng/Instagram.png') }}" height="50px" alt="">
+                    </a>
+                    <a href="https://www.facebook.com/profile.php?id=100086113938462" target="_blank">
+                      <img src="{{ asset('/public/img/IconsPng/Facebook.png') }}" height="50px" alt="">
+                    </a>
+                    <a href="https://www.tiktok.com/@smartmoneymakers" target="_blank">
+                      <img src="{{ asset('/public/img/IconsPng/TikTok.png') }}" height="50px" alt="">
+                    </a>
+                </div>
+            </li>
           </ul>
         </aside>
 
@@ -294,10 +442,17 @@
                     </ul>
                   </li>
                   <!-- / Style Switcher-->
+                @if(verificaTicketAluno())
+                      <li class="nav-item">
+                          <a href="{{ route('aluno.faq') }}" title='ticket'>
+                              <img style='height: 40px' src="{{ asset('/public/img/IconsPng/Tickets.png') }}" alt="">
+                          </a>
+                      </li>
+                @endif
                 @if(verificaMensagensAluno())
                       <li class="nav-item">
                           <a href="{{ route('aluno.mensagens') }}" title='Mensagens'>
-                              <img style='height: 40px' src="{{ asset('/public/img/Icons/Notificacoes.svg') }}" alt="">
+                              <img style='height: 40px' src="{{ asset('/public/img/IconsPng/Notificacoes.png') }}" alt="">
                           </a>
                       </li>
                 @endif
@@ -319,7 +474,7 @@
                   </a>
                   <ul class="dropdown-menu dropdown-menu-end">
                     <li>
-                      <a class="dropdown-item" href="pages-account-settings-account.html">
+                      <a class="dropdown-item" href="{{ route('aluno.perfil') }}">
                         <div class="d-flex">
                           <div class="flex-shrink-0 me-3">
                             <div class="avatar avatar-online">
@@ -337,20 +492,32 @@
                     </li>
                     <li>
                       <a class="dropdown-item" href="{{ route('aluno.perfil') }}">
-                        <i class="mdi mdi-account-outline me-2"></i>
+                        <img src="{{ asset('/public/img/IconsPng/Perfil.png') }}" height="25px" alt="" style="margin-right: 10px">
                         <span class="align-middle">Perfil</span>
                       </a>
                     </li>
                     <li>
                       <a class="dropdown-item" href="{{ route('aluno.perfil.settings') }}">
-                        <i class="mdi mdi-cog-outline me-2"></i>
+                        <img src="{{ asset('/public/img/IconsPng/Settings.png') }}" height="25px" alt="" style="margin-right: 10px">
                         <span class="align-middle">Settings</span>
                       </a>
                     </li>
                     <li>
+                      <a class="dropdown-item" href="{{ route('aluno.contas') }}">
+                        <img src="{{ asset('/public/img/IconsPng/Contas 2.png') }}" height="25px" alt="" style="margin-right: 10px">
+                        <span class="align-middle">Contas</span>
+                      </a>
+                    </li>
+                    <li>
                       <a class="dropdown-item" href="{{ route('aluno.perfil.alterarSenha') }}">
-                        <i class="mdi mdi-lock-reset me-2"></i>
+                        <img src="{{ asset('/public/img/IconsPng/Alterar Senha.png') }}" height="25px" alt="" style="margin-right: 10px">
                         <span class="align-middle">Alterar Senha</span>
+                      </a>
+                    </li>
+                    <li>
+                      <a class="dropdown-item" href="{{ route('aluno.excluirConta') }}">
+                        <img src="{{ asset('/public/img/IconsPng/Excluir.png') }}" height="25px" alt="" style="margin-right: 10px">
+                        <span class="align-middle">Excluir Conta</span>
                       </a>
                     </li>
                     <li>
@@ -358,7 +525,7 @@
                     </li>
                     <li>
                       <a class="dropdown-item" href="{{ route('aluno.logout') }}">
-                        <i class="mdi mdi-logout me-2"></i>
+                        <img src="{{ asset('/public/img/IconsPng/Sair.png') }}" height="25px" alt="" style="margin-right: 10px">
                         <span class="align-middle">Sair</span>
                       </a>
                     </li>
@@ -396,7 +563,7 @@
                     <script>
                       document.write(new Date().getFullYear());
                     </script>
-                    Smart Money Makers - Sistema Online<br>Desenvolvido por WEBEPEL SOLUÇÔES DIGITAIS
+                    Smart Money Makers - Sistema Online
                   </div>
                 </div>
               </div>
@@ -435,6 +602,13 @@
     <!-- Vendors JS -->
     <script src="{{ asset('/public/assets/vendor/libs/chartjs/chartjs.js') }}"></script>
     <script src="{{ asset('/public/assets/vendor/libs/swiper/swiper.js') }}"></script>
+    <script src="{{ asset('/public/assets/vendor/libs/fullcalendar/fullcalendar.js') }}"></script>
+    <script src="{{ asset('/public/assets/vendor/libs/select2/select2.js') }}"></script>
+    <script src="{{ asset('/public/assets/vendor/libs/jkanban/jkanban.js') }}"></script>
+    <script src="{{ asset('/public/assets/vendor/libs/quill/katex.js') }}"></script>
+    <script src="{{ asset('/public/assets/vendor/libs/quill/quill.js') }}"></script>
+    <script src="{{ asset('/public/assets/vendor/libs/flatpickr/flatpickr.js') }}"></script>
+    <script src="{{ asset('/public/assets/vendor/libs/moment/moment.js') }}"></script>
 
     <!-- Main JS -->
     <script src="{{ asset('/public/assets/js/main.js') }}"></script>

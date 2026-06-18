@@ -34,8 +34,9 @@
                         <table class="datatables-basic table" id="table-index">
                             <thead>
                                 <tr>
-                                    <th>Numero</th>
+                                    <th>Número</th>
                                     <th>Nome</th>
+                                    <th>Tipo</th>
                                     <th>Corretora</th>
                                     <th>Moeda</th>
                                     <th>Valor Inicial</th>
@@ -44,23 +45,41 @@
                                 </tr>
                             </thead>
                             @foreach($contas as $conta)
+                              @php
+                              if($conta->moeda == "BRL"){
+                                  $moeda = "R$";
+                              }
+                              elseif($conta->moeda == "USD"){
+                                  $moeda = "US$";
+                              }
+                              elseif($conta->moeda == "EUR"){
+                                  $moeda = "€";
+                              }
+                              elseif($conta->moeda == "GBP"){
+                                  $moeda = "£";
+                              }
+                              elseif($conta->moeda == "JPY"){
+                                  $moeda = "¥$";
+                              }
+                              @endphp
                               <tr>
                                   <td>{{ $conta->nrConta }}</td>
                                   <td>{{ $conta->nmConta }}</td>
+                                  <td>{{ $conta->tpConta }}</td>
                                   <td>{{ $conta->nome }}</td>
                                   <td>{{ $conta->moeda }}</td>
-                                  <td>R$ {{ valorDbForm($conta->vlContaInc) }}</td>
+                                  <td>{{ $moeda." ".valorDbForm($conta->vlContaInc) }}</td>
                                   <td>{{ $conta->dsConta }}</td>
                                   <td>
                                     <div class="dropdown">
                                       <button type="button" class="btn p-0 dropdown-toggle hide-arrow show" data-bs-toggle="dropdown" aria-expanded="true">
                                         <i class="mdi mdi-dots-vertical"></i>
                                       </button>
-                                      <div class="dropdown-menu" data-popper-placement="bottom-end" style="position: absolute; inset: 0px 0px auto auto; margin: 0px; transform: translate(-101.111px, 134.444px);">
-                                          <a class="dropdown-item waves-effect" href="{{ route('aluno.contas.editar', $conta->id) }}"><i class="mdi mdi-pencil-outline me-1"></i> Editar</a>
-                                          <a class="dropdown-item waves-effect" href="{{ route('aluno.contas.excluir', $conta->id) }}"><i class="mdi mdi-trash-can-outline me-1"></i> Excluir</a>
-                                          <a class="dropdown-item waves-effect" href="{{ route('aluno.contas.deposito', $conta->id) }}"><i class="mdi mdi-cash-plus me-1"></i> Depósitos</a>
-                                          <a class="dropdown-item waves-effect" href="{{ route('aluno.contas.saque', $conta->id) }}"><i class="mdi mdi-cash-minus me-1"></i> Saques</a>
+                                      <div class="dropdown-menu" data-popper-placement="bottom-end">
+                                          <a class="dropdown-item waves-effect" href="{{ route('aluno.contas.editar', $conta->id) }}"><img src="{{ asset('/public//img/IconsPng/Editar.png') }}" height="35px" alt="" style="margin-right: 10px"> Editar</a>
+                                          <a class="dropdown-item waves-effect" href="{{ route('aluno.contas.excluir', $conta->id) }}"><img src="{{ asset('/public//img/IconsPng/Excluir.png') }}" height="35px" alt="" style="margin-right: 10px"> Excluir</a>
+                                          <a class="dropdown-item waves-effect" href="{{ route('aluno.contas.deposito', $conta->id) }}"><img src="{{ asset('/public//img/IconsPng/Deposito.png') }}" height="35px" alt="" style="margin-right: 10px"> Depósitos</a>
+                                          <a class="dropdown-item waves-effect" href="{{ route('aluno.contas.saque', $conta->id) }}"><img src="{{ asset('/public//img/IconsPng/Saque.png') }}" height="35px" alt="" style="margin-right: 10px"> Saques</a>
                                       </div>
                                     </div>
                                   </td>

@@ -53,6 +53,9 @@ class Trade extends Model
         'cotacaoEUR',
         'cotacaoGBP',
         'cotacaoJPY',
+        'analiseMentor',
+        'aprovacaoMentor',
+        'obsMentor',
     ];
 
     public static function listarTradesExtratoConta($id_conta, $data){
@@ -103,8 +106,369 @@ class Trade extends Model
     }
 
     public static function listaResultados($aluno){
+        if($aluno->filtroTrades){
+            $var = explode(',', $aluno->filtroTrades);
+            $in = "";
+            foreach ($var as $opc){
+                $in .= ",'$opc'";
+            }
+            $in = substr($in, 1);
 
-        $sql = "SELECT *,ativos.nome AS nmAtivo,corretoras.nome AS nmCorretora,trades.id AS id_trade FROM trades
+            $sql = "SELECT *,trades.moeda AS moeda,ativos.nome AS nmAtivo,corretoras.nome AS nmCorretora,trades.id AS id_trade FROM trades
+            LEFT JOIN corretoras ON (trades.id_corretora = corretoras.id)
+            LEFT JOIN contas ON (trades.id_conta = contas.id)
+            LEFT JOIN ativos ON (trades.id_ativo = ativos.id)
+            WHERE trades.id IN ($in)";
+
+        }
+        else{
+            $sql = "SELECT *,trades.moeda AS moeda,ativos.nome AS nmAtivo,corretoras.nome AS nmCorretora,trades.id AS id_trade FROM trades
+            LEFT JOIN corretoras ON (trades.id_corretora = corretoras.id)
+            LEFT JOIN contas ON (trades.id_conta = contas.id)
+            LEFT JOIN ativos ON (trades.id_ativo = ativos.id)
+            WHERE trades.id_aluno='$aluno->id' AND trades.stOperacao='Closed'
+            ";
+
+            if($aluno->dtEntradaInc){
+                $dtHrEntrada = $aluno->dtEntradaInc." 00:00:00";
+                $sql .= " AND trades.dtHrEntrada >= '$dtHrEntrada'";
+            }
+
+            if($aluno->dtEntradaFn){
+                $dtHrEntrada = $aluno->dtEntradaFn." 23:59:59";
+                $sql .= " AND trades.dtHrEntrada <= '$dtHrEntrada'";
+            }
+
+            if($aluno->dtSaidaInc){
+                $dtHrSaida = $aluno->dtSaidaInc." 00:00:00";
+                $sql .= " AND trades.dtHrSaida >= '$dtHrSaida'";
+            }
+
+            if($aluno->dtSaidaFn){
+                $dtHrSaida = $aluno->dtSaidaFn." 23:59:59";
+                $sql .= " AND trades.dtHrSaida <= '$dtHrSaida'";
+            }
+
+            if($aluno->filtroStatus){
+                $var = explode(',', $aluno->filtroStatus);
+                $in = "";
+                foreach ($var as $opc){
+                    $in .= ",'$opc'";
+                }
+                $in = substr($in, 1);
+                $sql .= " AND trades.stOao IN ($in)";
+            }
+
+            if($aluno->filtroTipoOperacao){
+                $var = explode(',', $aluno->filtroTipoOperacao);
+                $in = "";
+                foreach ($var as $opc){
+                    $in .= ",'$opc'";
+                }
+                $in = substr($in, 1);
+                $sql .= " AND trades.tipoOperacao IN ($in)";
+            }
+
+            if($aluno->filtroPais){
+                $var = explode(',', $aluno->filtroPais);
+                $in = "";
+                foreach ($var as $opc){
+                    $in .= ",'$opc'";
+                }
+                $in = substr($in, 1);
+                $sql .= " AND trades.pais IN ($in)";
+            }
+
+            if($aluno->filtroCorretora){
+                $var = explode(',', $aluno->filtroCorretora);
+                $in = "";
+                foreach ($var as $opc){
+                    $in .= ",$opc";
+                }
+                $in = substr($in, 1);
+                $sql .= " AND trades.id_corretora IN ($in)";
+            }
+
+            if($aluno->filtroTipoConta){
+                $var = explode(',', $aluno->filtroTipoConta);
+                $in = "";
+                foreach ($var as $opc){
+                    $in .= ",'$opc'";
+                }
+                $in = substr($in, 1);
+                $sql .= " AND trades.tipoConta IN ($in)";
+            }
+
+            if($aluno->filtroConta){
+                $var = explode(',', $aluno->filtroConta);
+                $in = "";
+                foreach ($var as $opc){
+                    $in .= ",$opc";
+                }
+                $in = substr($in, 1);
+                $sql .= " AND trades.id_conta IN ($in)";
+            }
+
+            if($aluno->filtroAtivo){
+                $var = explode(',', $aluno->filtroAtivo);
+                $in = "";
+                foreach ($var as $opc){
+                    $in .= ",$opc";
+                }
+                $in = substr($in, 1);
+                $sql .= " AND trades.id_ativo IN ($in)";
+            }
+
+            if($aluno->filtroTipoAtivo){
+                $var = explode(',', $aluno->filtroTipoAtivo);
+                $in = "";
+                foreach ($var as $opc){
+                    $in .= ",'$opc'";
+                }
+                $in = substr($in, 1);
+                $sql .= " AND trades.tipoAtivo IN ($in)";
+            }
+
+            if($aluno->filtroOperacao){
+                $var = explode(',', $aluno->filtroOperacao);
+                $in = "";
+                foreach ($var as $opc){
+                    $in .= ",'$opc'";
+                }
+                $in = substr($in, 1);
+                $sql .= " AND trades.operacao IN ($in)";
+            }
+
+            if($aluno->filtroDirecao){
+                $var = explode(',', $aluno->filtroDirecao);
+                $in = "";
+                foreach ($var as $opc){
+                    $in .= ",'$opc'";
+                }
+                $in = substr($in, 1);
+                $sql .= " AND trades.direcao IN ($in)";
+            }
+
+            if($aluno->filtroFase){
+                $var = explode(',', $aluno->filtroFase);
+                $in = "";
+                foreach ($var as $opc){
+                    $in .= ",'$opc'";
+                }
+                $in = substr($in, 1);
+                $sql .= " AND trades.fase IN ($in)";
+            }
+
+            if($aluno->filtroMoeda){
+                $var = explode(',', $aluno->filtroMoeda);
+                $in = "";
+                foreach ($var as $opc){
+                    $in .= ",'$opc'";
+                }
+                $in = substr($in, 1);
+                $sql .= " AND trades.moeda IN ($in)";
+            }
+
+            if($aluno->filtroTipoCusto){
+                $var = explode(',', $aluno->filtroTipoCusto);
+                $in = "";
+                foreach ($var as $opc){
+                    $in .= ",'$opc'";
+                }
+                $in = substr($in, 1);
+                $sql .= " AND trades.tipoCusto IN ($in)";
+            }
+
+            if($aluno->filtroResultado){
+                $var = explode(',', $aluno->filtroResultado);
+                $in = "";
+                foreach ($var as $opc){
+                    $in .= ",'$opc'";
+                }
+                $in = substr($in, 1);
+                $sql .= " AND trades.gainOrLoss IN ($in)";
+            }
+        }
+
+        return \DB::select($sql);
+
+    }
+
+    public static function listaTradesAlunoTrades($aluno){
+
+        $sql = "SELECT *, trades.moeda AS moeda, ativos.nome AS nmAtivo,corretoras.nome AS nmCorretora,trades.id AS id_trade FROM trades
+        LEFT JOIN corretoras ON (trades.id_corretora = corretoras.id)
+        LEFT JOIN contas ON (trades.id_conta = contas.id)
+        LEFT JOIN ativos ON (trades.id_ativo = ativos.id)
+        WHERE trades.id_aluno='$aluno->id'";
+
+        if($aluno->dtEntradaInc){
+            $dtHrEntrada = $aluno->dtEntradaInc." 00:00:00";
+            $sql .= " AND trades.dtHrEntrada >= '$dtHrEntrada'";
+        }
+
+        if($aluno->dtEntradaFn){
+            $dtHrEntrada = $aluno->dtEntradaFn." 23:59:59";
+            $sql .= " AND trades.dtHrEntrada <= '$dtHrEntrada'";
+        }
+
+        if($aluno->dtSaidaInc){
+            $dtHrSaida = $aluno->dtSaidaInc." 00:00:00";
+            $sql .= " AND trades.dtHrSaida >= '$dtHrSaida'";
+        }
+
+        if($aluno->dtSaidaFn){
+            $dtHrSaida = $aluno->dtSaidaFn." 23:59:59";
+            $sql .= " AND trades.dtHrSaida <= '$dtHrSaida'";
+        }
+
+        if($aluno->filtroStatus){
+            $var = explode(',', $aluno->filtroStatus);
+            $in = "";
+            foreach ($var as $opc){
+                $in .= ",'$opc'";
+            }
+            $in = substr($in, 1);
+            $sql .= " AND trades.stOao IN ($in)";
+        }
+
+        if($aluno->filtroTipoOperacao){
+            $var = explode(',', $aluno->filtroTipoOperacao);
+            $in = "";
+            foreach ($var as $opc){
+                $in .= ",'$opc'";
+            }
+            $in = substr($in, 1);
+            $sql .= " AND trades.tipoOperacao IN ($in)";
+        }
+
+        if($aluno->filtroPais){
+            $var = explode(',', $aluno->filtroPais);
+            $in = "";
+            foreach ($var as $opc){
+                $in .= ",'$opc'";
+            }
+            $in = substr($in, 1);
+            $sql .= " AND trades.pais IN ($in)";
+        }
+
+        if($aluno->filtroCorretora){
+            $var = explode(',', $aluno->filtroCorretora);
+            $in = "";
+            foreach ($var as $opc){
+                $in .= ",$opc";
+            }
+            $in = substr($in, 1);
+            $sql .= " AND trades.id_corretora IN ($in)";
+        }
+
+        if($aluno->filtroTipoConta){
+            $var = explode(',', $aluno->filtroTipoConta);
+            $in = "";
+            foreach ($var as $opc){
+                $in .= ",'$opc'";
+            }
+            $in = substr($in, 1);
+            $sql .= " AND trades.tipoConta IN ($in)";
+        }
+
+        if($aluno->filtroConta){
+            $var = explode(',', $aluno->filtroConta);
+            $in = "";
+            foreach ($var as $opc){
+                $in .= ",$opc";
+            }
+            $in = substr($in, 1);
+            $sql .= " AND trades.id_conta IN ($in)";
+        }
+
+        if($aluno->filtroAtivo){
+            $var = explode(',', $aluno->filtroAtivo);
+            $in = "";
+            foreach ($var as $opc){
+                $in .= ",$opc";
+            }
+            $in = substr($in, 1);
+            $sql .= " AND trades.id_ativo IN ($in)";
+        }
+
+        if($aluno->filtroTipoAtivo){
+            $var = explode(',', $aluno->filtroTipoAtivo);
+            $in = "";
+            foreach ($var as $opc){
+                $in .= ",'$opc'";
+            }
+            $in = substr($in, 1);
+            $sql .= " AND trades.tipoAtivo IN ($in)";
+        }
+
+        if($aluno->filtroOperacao){
+            $var = explode(',', $aluno->filtroOperacao);
+            $in = "";
+            foreach ($var as $opc){
+                $in .= ",'$opc'";
+            }
+            $in = substr($in, 1);
+            $sql .= " AND trades.operacao IN ($in)";
+        }
+
+        if($aluno->filtroDirecao){
+            $var = explode(',', $aluno->filtroDirecao);
+            $in = "";
+            foreach ($var as $opc){
+                $in .= ",'$opc'";
+            }
+            $in = substr($in, 1);
+            $sql .= " AND trades.direcao IN ($in)";
+        }
+
+        if($aluno->filtroFase){
+            $var = explode(',', $aluno->filtroFase);
+            $in = "";
+            foreach ($var as $opc){
+                $in .= ",'$opc'";
+            }
+            $in = substr($in, 1);
+            $sql .= " AND trades.fase IN ($in)";
+        }
+
+        if($aluno->filtroMoeda){
+            $var = explode(',', $aluno->filtroMoeda);
+            $in = "";
+            foreach ($var as $opc){
+                $in .= ",'$opc'";
+            }
+            $in = substr($in, 1);
+            $sql .= " AND trades.moeda IN ($in)";
+        }
+
+        if($aluno->filtroTipoCusto){
+            $var = explode(',', $aluno->filtroTipoCusto);
+            $in = "";
+            foreach ($var as $opc){
+                $in .= ",'$opc'";
+            }
+            $in = substr($in, 1);
+            $sql .= " AND trades.tipoCusto IN ($in)";
+        }
+
+        if($aluno->filtroResultado){
+            $var = explode(',', $aluno->filtroResultado);
+            $in = "";
+            foreach ($var as $opc){
+                $in .= ",'$opc'";
+            }
+            $in = substr($in, 1);
+            $sql .= " AND trades.gainOrLoss IN ($in)";
+        }
+
+        return \DB::select($sql);
+
+    }
+
+    public static function listaTradesAlunoResultado($aluno){
+
+        $sql = "SELECT *, trades.moeda AS moeda, ativos.nome AS nmAtivo,corretoras.nome AS nmCorretora,trades.id AS id_trade FROM trades
         LEFT JOIN corretoras ON (trades.id_corretora = corretoras.id)
         LEFT JOIN contas ON (trades.id_conta = contas.id)
         LEFT JOIN ativos ON (trades.id_ativo = ativos.id)
@@ -276,191 +640,220 @@ class Trade extends Model
     }
 
     public static function listaResultados3Maiores($aluno, $resultado){
-
-        $sql = "SELECT *,ativos.nome AS nmAtivo,corretoras.nome AS nmCorretora,trades.id AS id_trade FROM trades
-        LEFT JOIN corretoras ON (trades.id_corretora = corretoras.id)
-        LEFT JOIN contas ON (trades.id_conta = contas.id)
-        LEFT JOIN ativos ON (trades.id_ativo = ativos.id)
-        WHERE trades.id_aluno='$aluno->id' AND trades.stOperacao='Closed'
-        AND gainOrLoss='$resultado'";
-
-        if($aluno->dtEntradaInc){
-            $dtHrEntrada = $aluno->dtEntradaInc." 00:00:00";
-            $sql .= " AND trades.dtHrEntrada >= '$dtHrEntrada'";
-        }
-
-        if($aluno->dtEntradaFn){
-            $dtHrEntrada = $aluno->dtEntradaFn." 23:59:59";
-            $sql .= " AND trades.dtHrEntrada <= '$dtHrEntrada'";
-        }
-
-        if($aluno->dtSaidaInc){
-            $dtHrSaida = $aluno->dtSaidaInc." 00:00:00";
-            $sql .= " AND trades.dtHrSaida >= '$dtHrSaida'";
-        }
-
-        if($aluno->dtSaidaFn){
-            $dtHrSaida = $aluno->dtSaidaFn." 23:59:59";
-            $sql .= " AND trades.dtHrSaida <= '$dtHrSaida'";
-        }
-
-        if($aluno->filtroStatus){
-            $var = explode(',', $aluno->filtroStatus);
+        if($aluno->filtroTrades){
+            $var = explode(',', $aluno->filtroTrades);
             $in = "";
             foreach ($var as $opc){
                 $in .= ",'$opc'";
             }
             $in = substr($in, 1);
-            $sql .= " AND trades.stOao IN ($in)";
-        }
 
-        if($aluno->filtroTipoOperacao){
-            $var = explode(',', $aluno->filtroTipoOperacao);
-            $in = "";
-            foreach ($var as $opc){
-                $in .= ",'$opc'";
+            $sql = "SELECT *,trades.moeda AS moeda,ativos.nome AS nmAtivo,corretoras.nome AS nmCorretora,trades.id AS id_trade FROM trades
+            LEFT JOIN corretoras ON (trades.id_corretora = corretoras.id)
+            LEFT JOIN contas ON (trades.id_conta = contas.id)
+            LEFT JOIN ativos ON (trades.id_ativo = ativos.id)
+            WHERE trades.id IN ($in) AND gainOrLoss='$resultado'";
+
+        }
+        else{
+            $sql = "SELECT *,ativos.nome AS nmAtivo,corretoras.nome AS nmCorretora,trades.id AS id_trade FROM trades
+            LEFT JOIN corretoras ON (trades.id_corretora = corretoras.id)
+            LEFT JOIN contas ON (trades.id_conta = contas.id)
+            LEFT JOIN ativos ON (trades.id_ativo = ativos.id)
+            WHERE trades.id_aluno='$aluno->id' AND trades.stOperacao='Closed'
+            AND gainOrLoss='$resultado'";
+
+            if($aluno->dtEntradaInc){
+                $dtHrEntrada = $aluno->dtEntradaInc." 00:00:00";
+                $sql .= " AND trades.dtHrEntrada >= '$dtHrEntrada'";
             }
-            $in = substr($in, 1);
-            $sql .= " AND trades.tipoOperacao IN ($in)";
-        }
 
-        if($aluno->filtroPais){
-            $var = explode(',', $aluno->filtroPais);
-            $in = "";
-            foreach ($var as $opc){
-                $in .= ",'$opc'";
+            if($aluno->dtEntradaFn){
+                $dtHrEntrada = $aluno->dtEntradaFn." 23:59:59";
+                $sql .= " AND trades.dtHrEntrada <= '$dtHrEntrada'";
             }
-            $in = substr($in, 1);
-            $sql .= " AND trades.pais IN ($in)";
-        }
 
-        if($aluno->filtroCorretora){
-            $var = explode(',', $aluno->filtroCorretora);
-            $in = "";
-            foreach ($var as $opc){
-                $in .= ",$opc";
+            if($aluno->dtSaidaInc){
+                $dtHrSaida = $aluno->dtSaidaInc." 00:00:00";
+                $sql .= " AND trades.dtHrSaida >= '$dtHrSaida'";
             }
-            $in = substr($in, 1);
-            $sql .= " AND trades.id_corretora IN ($in)";
-        }
 
-        if($aluno->filtroTipoConta){
-            $var = explode(',', $aluno->filtroTipoConta);
-            $in = "";
-            foreach ($var as $opc){
-                $in .= ",'$opc'";
+            if($aluno->dtSaidaFn){
+                $dtHrSaida = $aluno->dtSaidaFn." 23:59:59";
+                $sql .= " AND trades.dtHrSaida <= '$dtHrSaida'";
             }
-            $in = substr($in, 1);
-            $sql .= " AND trades.tipoConta IN ($in)";
-        }
 
-        if($aluno->filtroConta){
-            $var = explode(',', $aluno->filtroConta);
-            $in = "";
-            foreach ($var as $opc){
-                $in .= ",$opc";
+            if($aluno->filtroStatus){
+                $var = explode(',', $aluno->filtroStatus);
+                $in = "";
+                foreach ($var as $opc){
+                    $in .= ",'$opc'";
+                }
+                $in = substr($in, 1);
+                $sql .= " AND trades.stOao IN ($in)";
             }
-            $in = substr($in, 1);
-            $sql .= " AND trades.id_conta IN ($in)";
-        }
 
-        if($aluno->filtroAtivo){
-            $var = explode(',', $aluno->filtroAtivo);
-            $in = "";
-            foreach ($var as $opc){
-                $in .= ",$opc";
+            if($aluno->filtroTipoOperacao){
+                $var = explode(',', $aluno->filtroTipoOperacao);
+                $in = "";
+                foreach ($var as $opc){
+                    $in .= ",'$opc'";
+                }
+                $in = substr($in, 1);
+                $sql .= " AND trades.tipoOperacao IN ($in)";
             }
-            $in = substr($in, 1);
-            $sql .= " AND trades.id_ativo IN ($in)";
-        }
 
-        if($aluno->filtroTipoAtivo){
-            $var = explode(',', $aluno->filtroTipoAtivo);
-            $in = "";
-            foreach ($var as $opc){
-                $in .= ",'$opc'";
+            if($aluno->filtroPais){
+                $var = explode(',', $aluno->filtroPais);
+                $in = "";
+                foreach ($var as $opc){
+                    $in .= ",'$opc'";
+                }
+                $in = substr($in, 1);
+                $sql .= " AND trades.pais IN ($in)";
             }
-            $in = substr($in, 1);
-            $sql .= " AND trades.tipoAtivo IN ($in)";
-        }
 
-        if($aluno->filtroOperacao){
-            $var = explode(',', $aluno->filtroOperacao);
-            $in = "";
-            foreach ($var as $opc){
-                $in .= ",'$opc'";
+            if($aluno->filtroCorretora){
+                $var = explode(',', $aluno->filtroCorretora);
+                $in = "";
+                foreach ($var as $opc){
+                    $in .= ",$opc";
+                }
+                $in = substr($in, 1);
+                $sql .= " AND trades.id_corretora IN ($in)";
             }
-            $in = substr($in, 1);
-            $sql .= " AND trades.operacao IN ($in)";
-        }
 
-        if($aluno->filtroDirecao){
-            $var = explode(',', $aluno->filtroDirecao);
-            $in = "";
-            foreach ($var as $opc){
-                $in .= ",'$opc'";
+            if($aluno->filtroTipoConta){
+                $var = explode(',', $aluno->filtroTipoConta);
+                $in = "";
+                foreach ($var as $opc){
+                    $in .= ",'$opc'";
+                }
+                $in = substr($in, 1);
+                $sql .= " AND trades.tipoConta IN ($in)";
             }
-            $in = substr($in, 1);
-            $sql .= " AND trades.direcao IN ($in)";
-        }
 
-        if($aluno->filtroFase){
-            $var = explode(',', $aluno->filtroFase);
-            $in = "";
-            foreach ($var as $opc){
-                $in .= ",'$opc'";
+            if($aluno->filtroConta){
+                $var = explode(',', $aluno->filtroConta);
+                $in = "";
+                foreach ($var as $opc){
+                    $in .= ",$opc";
+                }
+                $in = substr($in, 1);
+                $sql .= " AND trades.id_conta IN ($in)";
             }
-            $in = substr($in, 1);
-            $sql .= " AND trades.fase IN ($in)";
-        }
 
-        if($aluno->filtroMoeda){
-            $var = explode(',', $aluno->filtroMoeda);
-            $in = "";
-            foreach ($var as $opc){
-                $in .= ",'$opc'";
+            if($aluno->filtroAtivo){
+                $var = explode(',', $aluno->filtroAtivo);
+                $in = "";
+                foreach ($var as $opc){
+                    $in .= ",$opc";
+                }
+                $in = substr($in, 1);
+                $sql .= " AND trades.id_ativo IN ($in)";
             }
-            $in = substr($in, 1);
-            $sql .= " AND trades.moeda IN ($in)";
-        }
 
-        if($aluno->filtroTipoCusto){
-            $var = explode(',', $aluno->filtroTipoCusto);
-            $in = "";
-            foreach ($var as $opc){
-                $in .= ",'$opc'";
+            if($aluno->filtroTipoAtivo){
+                $var = explode(',', $aluno->filtroTipoAtivo);
+                $in = "";
+                foreach ($var as $opc){
+                    $in .= ",'$opc'";
+                }
+                $in = substr($in, 1);
+                $sql .= " AND trades.tipoAtivo IN ($in)";
             }
-            $in = substr($in, 1);
-            $sql .= " AND trades.tipoCusto IN ($in)";
-        }
 
-        if($aluno->filtroResultado){
-            $var = explode(',', $aluno->filtroResultado);
-            $in = "";
-            foreach ($var as $opc){
-                $in .= ",'$opc'";
+            if($aluno->filtroOperacao){
+                $var = explode(',', $aluno->filtroOperacao);
+                $in = "";
+                foreach ($var as $opc){
+                    $in .= ",'$opc'";
+                }
+                $in = substr($in, 1);
+                $sql .= " AND trades.operacao IN ($in)";
             }
-            $in = substr($in, 1);
-            $sql .= " AND trades.gainOrLoss IN ($in)";
+
+            if($aluno->filtroDirecao){
+                $var = explode(',', $aluno->filtroDirecao);
+                $in = "";
+                foreach ($var as $opc){
+                    $in .= ",'$opc'";
+                }
+                $in = substr($in, 1);
+                $sql .= " AND trades.direcao IN ($in)";
+            }
+
+            if($aluno->filtroFase){
+                $var = explode(',', $aluno->filtroFase);
+                $in = "";
+                foreach ($var as $opc){
+                    $in .= ",'$opc'";
+                }
+                $in = substr($in, 1);
+                $sql .= " AND trades.fase IN ($in)";
+            }
+
+            if($aluno->filtroMoeda){
+                $var = explode(',', $aluno->filtroMoeda);
+                $in = "";
+                foreach ($var as $opc){
+                    $in .= ",'$opc'";
+                }
+                $in = substr($in, 1);
+                $sql .= " AND trades.moeda IN ($in)";
+            }
+
+            if($aluno->filtroTipoCusto){
+                $var = explode(',', $aluno->filtroTipoCusto);
+                $in = "";
+                foreach ($var as $opc){
+                    $in .= ",'$opc'";
+                }
+                $in = substr($in, 1);
+                $sql .= " AND trades.tipoCusto IN ($in)";
+            }
+
+            if($aluno->filtroResultado){
+                $var = explode(',', $aluno->filtroResultado);
+                $in = "";
+                foreach ($var as $opc){
+                    $in .= ",'$opc'";
+                }
+                $in = substr($in, 1);
+                $sql .= " AND trades.gainOrLoss IN ($in)";
+            }
+        }
+        if($resultado == 'Gain'){
+            $sql .= " ORDER BY resPosicaoFinanceiro DESC LIMIT 3";
+        }
+        else{
+            $sql .= " ORDER BY resPosicaoFinanceiro ASC LIMIT 3";
         }
 
-        $sql .= " ORDER BY resPosicaoFinanceiro DESC LIMIT 3";
 
         return \DB::select($sql);
 
     }
 
-    public static function listaResultadosUsers($user){
+    public static function listaResultados3MaioresUser($user, $resultado){
         $sql = "SELECT *,ativos.nome AS nmAtivo,corretoras.nome AS nmCorretora,trades.id AS id_trade FROM trades
         LEFT JOIN corretoras ON (trades.id_corretora = corretoras.id)
         LEFT JOIN contas ON (trades.id_conta = contas.id)
         LEFT JOIN ativos ON (trades.id_ativo = ativos.id)
         LEFT JOIN alunos ON (trades.id_aluno = alunos.id)
-        WHERE trades.stOperacao='Closed'
+        WHERE trades.stOperacao='Closed' AND trades.gainOrLoss='$resultado'
         ";
-        /*
-        if($user->filtroTag){
-            $controleVazio = true;
+
+        if($user->filtroAluno){
+            $var = explode(',', $user->filtroAluno);
+            $in = "";
+            foreach ($var as $opc){
+                $in .= ",$opc";
+            }
+            $in = substr($in, 1);
+            $sql .= " AND trades.id_aluno IN ($in)";
+        }
+        elseif($user->filtroTag){
             $tags = explode(',', $user->filtroTag);
             $in = "";
 
@@ -472,20 +865,6 @@ class Trade extends Model
                 }
             }
 
-            if($controleVazio){
-                return null;
-            }
-
-            $in = substr($in, 1);
-            $sql .= " AND trades.id_aluno IN ($in)";
-        }*/
-
-        if($user->filtroAluno){
-            $var = explode(',', $user->filtroAluno);
-            $in = "";
-            foreach ($var as $opc){
-                $in .= ",$opc";
-            }
             $in = substr($in, 1);
             $sql .= " AND trades.id_aluno IN ($in)";
         }
@@ -630,6 +1009,204 @@ class Trade extends Model
             $sql .= " AND trades.gainOrLoss IN ($in)";
         }
 
+        if($resultado == 'Gain'){
+            $sql .= " ORDER BY trades.resPosicaoFinanceiro DESC LIMIT 3";
+        }
+        else{
+            $sql .= " ORDER BY trades.resPosicaoFinanceiro ASC LIMIT 3";
+        }
+
+        return \DB::select($sql);
+
+    }
+
+    public static function listaResultadosUsers($user){
+        $sql = "SELECT *,ativos.nome AS nmAtivo,corretoras.nome AS nmCorretora,trades.id AS id_trade FROM trades
+        LEFT JOIN corretoras ON (trades.id_corretora = corretoras.id)
+        LEFT JOIN contas ON (trades.id_conta = contas.id)
+        LEFT JOIN ativos ON (trades.id_ativo = ativos.id)
+        LEFT JOIN alunos ON (trades.id_aluno = alunos.id)
+        WHERE trades.stOperacao='Closed'
+        ";
+
+        if($user->filtroTrades){
+            $var = explode(',', $user->filtroTrades);
+            $in = "";
+            foreach ($var as $opc){
+                $in .= ",$opc";
+            }
+            $in = substr($in, 1);
+            $sql .= " AND trades.id IN ($in)";
+        }
+        else{
+            if($user->filtroAluno){
+                $var = explode(',', $user->filtroAluno);
+                $in = "";
+                foreach ($var as $opc){
+                    $in .= ",$opc";
+                }
+                $in = substr($in, 1);
+                $sql .= " AND trades.id_aluno IN ($in)";
+            }
+            elseif($user->filtroTag){
+                $tags = explode(',', $user->filtroTag);
+                $in = "";
+
+                foreach ($tags as $id_tag){
+                    $alunos = AlunoTag::where('id_tag', $id_tag)->get();
+                    if($alunos->count() > 0){
+                        foreach($alunos as $aluno){
+                            $in .= ','.$aluno->id_aluno;
+                        }
+                    }
+                }
+                if($in != ""){
+                    $in = substr($in, 1);
+                    $sql .= " AND trades.id_aluno IN ($in)";
+                }
+            }
+
+            if($user->filtroDtEntradaInc){
+                $dtHrEntrada = $user->filtroDtEntradaInc." 00:00:00";
+                $sql .= " AND trades.dtHrEntrada >= '$dtHrEntrada'";
+            }
+
+            if($user->filtroDtEntradaFn){
+                $dtHrEntrada = $user->filtroDtEntradaFn." 23:59:59";
+                $sql .= " AND trades.dtHrEntrada <= '$dtHrEntrada'";
+            }
+
+            if($user->filtroDtSaidaInc){
+                $dtHrSaida = $user->filtroDtSaidaInc." 00:00:00";
+                $sql .= " AND trades.dtHrSaida >= '$dtHrSaida'";
+            }
+
+            if($user->filtroDtSaidaFn){
+                $dtHrSaida = $user->filtroDtSaidaFn." 23:59:59";
+                $sql .= " AND trades.dtHrSaida <= '$dtHrSaida'";
+            }
+
+            if($user->filtroTipoOperacao){
+                $var = explode(',', $user->filtroTipoOperacao);
+                $in = "";
+                foreach ($var as $opc){
+                    $in .= ",'$opc'";
+                }
+                $in = substr($in, 1);
+                $sql .= " AND trades.tipoOperacao IN ($in)";
+            }
+
+            if($user->filtroPais){
+                $var = explode(',', $user->filtroPais);
+                $in = "";
+                foreach ($var as $opc){
+                    $in .= ",'$opc'";
+                }
+                $in = substr($in, 1);
+                $sql .= " AND trades.pais IN ($in)";
+            }
+
+            if($user->filtroCorretora){
+                $var = explode(',', $user->filtroCorretora);
+                $in = "";
+                foreach ($var as $opc){
+                    $in .= ",$opc";
+                }
+                $in = substr($in, 1);
+                $sql .= " AND trades.id_corretora IN ($in)";
+            }
+
+            if($user->filtroTipoConta){
+                $var = explode(',', $user->filtroTipoConta);
+                $in = "";
+                foreach ($var as $opc){
+                    $in .= ",'$opc'";
+                }
+                $in = substr($in, 1);
+                $sql .= " AND trades.tipoConta IN ($in)";
+            }
+
+            if($user->filtroAtivo){
+                $var = explode(',', $user->filtroAtivo);
+                $in = "";
+                foreach ($var as $opc){
+                    $in .= ",$opc";
+                }
+                $in = substr($in, 1);
+                $sql .= " AND trades.id_ativo IN ($in)";
+            }
+
+            if($user->filtroTipoAtivo){
+                $var = explode(',', $user->filtroTipoAtivo);
+                $in = "";
+                foreach ($var as $opc){
+                    $in .= ",'$opc'";
+                }
+                $in = substr($in, 1);
+                $sql .= " AND trades.tipoAtivo IN ($in)";
+            }
+
+            if($user->filtroOperacao){
+                $var = explode(',', $user->filtroOperacao);
+                $in = "";
+                foreach ($var as $opc){
+                    $in .= ",'$opc'";
+                }
+                $in = substr($in, 1);
+                $sql .= " AND trades.operacao IN ($in)";
+            }
+
+            if($user->filtroDirecao){
+                $var = explode(',', $user->filtroDirecao);
+                $in = "";
+                foreach ($var as $opc){
+                    $in .= ",'$opc'";
+                }
+                $in = substr($in, 1);
+                $sql .= " AND trades.direcao IN ($in)";
+            }
+
+            if($user->filtroFase){
+                $var = explode(',', $user->filtroFase);
+                $in = "";
+                foreach ($var as $opc){
+                    $in .= ",'$opc'";
+                }
+                $in = substr($in, 1);
+                $sql .= " AND trades.fase IN ($in)";
+            }
+
+            if($user->filtroMoeda){
+                $var = explode(',', $user->filtroMoeda);
+                $in = "";
+                foreach ($var as $opc){
+                    $in .= ",'$opc'";
+                }
+                $in = substr($in, 1);
+                $sql .= " AND trades.moeda IN ($in)";
+            }
+
+            if($user->filtroTipoCusto){
+                $var = explode(',', $user->filtroTipoCusto);
+                $in = "";
+                foreach ($var as $opc){
+                    $in .= ",'$opc'";
+                }
+                $in = substr($in, 1);
+                $sql .= " AND trades.tipoCusto IN ($in)";
+            }
+
+            if($user->filtroResultado){
+                $var = explode(',', $user->filtroResultado);
+                $in = "";
+                foreach ($var as $opc){
+                    $in .= ",'$opc'";
+                }
+                $in = substr($in, 1);
+                $sql .= " AND trades.gainOrLoss IN ($in)";
+            }
+        }
+
         return \DB::select($sql);
 
     }
@@ -655,5 +1232,46 @@ class Trade extends Model
 
         return \DB::select($sql);
     }
+
+    public static function buscaResultadosDataUser($user, $data){
+        $dtFn = $data." 23:59:59";
+
+        if($user->filtroAluno){
+            $var = explode(',', $user->filtroAluno);
+            $in = "";
+            foreach ($var as $opc){
+                $in .= ",$opc";
+            }
+            $in = substr($in, 1);
+        }
+        elseif($user->filtroTag){
+            $tags = explode(',', $user->filtroTag);
+            $in = "";
+
+            foreach ($tags as $id_tag){
+                $alunos = AlunoTag::where('id_tag', $id_tag)->get();
+                foreach($alunos as $aluno){
+                    $in .= ','.$aluno->id_aluno;
+                }
+            }
+
+            $in = substr($in, 1);
+        }
+        else{
+            $alunos = Aluno::where('stAluno','Ativo')->get();
+            $in = "";
+            foreach($alunos as $aluno){
+                $in .= ",$aluno->id";
+            }
+            $in = substr($in, 1);
+        }
+
+        $sql = "SELECT count('id') AS quantidade, `gainOrLoss` FROM `trades` WHERE
+        `id_aluno` IN ($in) AND `stOperacao`='Closed' AND `dtHrSaida`<='$dtFn'
+        GROUP BY `gainOrLoss`";
+
+        return \DB::select($sql);
+    }
+
 
 }

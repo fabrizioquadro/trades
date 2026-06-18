@@ -9,95 +9,24 @@ use App\Models\Conta;
 use App\Models\Ativo;
 use App\Models\Trade;
 use App\Models\Aluno;
+use App\Http\Controllers\FiltroController;
 
 class ResultadoController extends Controller
 {
     public function index(Request $request){
         $user = \Auth::user();
-
-        if($request->has('controle')){
-            if($request->get('controle') == "limparFiltros"){
-                //entrando aqui vamos salvar os dados no db
-                $user->filtroTag = null;
-                $user->filtroAluno = null;
-                $user->filtroDtEntradaInc = null;
-                $user->filtroDtEntradaFn = null;
-                $user->filtroDtSaidaInc = null;
-                $user->filtroDtSaidaFn = null;
-                $user->filtroTipoOperacao = null;
-                $user->filtroPais = null;
-                $user->filtroCorretora = null;
-                $user->filtroTipoConta = null;
-                $user->filtroAtivo = null;
-                $user->filtroTipoAtivo = null;
-                $user->filtroOperacao = null;
-                $user->filtroDirecao = null;
-                $user->filtroFase = null;
-                $user->filtroMoeda = null;
-                $user->filtroTipoCusto = null;
-                $user->filtroResultado = null;
-            }
-            else{
-                //entrando aqui vamos salvar os dados no db
-                $user->filtroTag = substr($request->get('filtroTag'), 1);
-                $user->filtroAluno = substr($request->get('filtroAluno'), 1);
-                $user->filtroDtEntradaInc = $request->get('dtEntradaInc');
-                $user->filtroDtEntradaFn = $request->get('dtEntradaFn');
-                $user->filtroDtSaidaInc = $request->get('dtSaidaInc');
-                $user->filtroDtSaidaFn = $request->get('dtSaidaFn');
-                $user->filtroTipoOperacao = substr($request->get('filtroTipoOperacao'), 1);
-                $user->filtroPais = substr($request->get('filtroPais'), 1);
-                $user->filtroCorretora = substr($request->get('filtroCorretora'), 1);
-                $user->filtroTipoConta = substr($request->get('filtroTipoConta'), 1);
-                $user->filtroAtivo = substr($request->get('filtroAtivo'), 1);
-                $user->filtroTipoAtivo = substr($request->get('filtroTipoAtivo'), 1);
-                $user->filtroOperacao = substr($request->get('filtroOperacao'), 1);
-                $user->filtroDirecao = substr($request->get('filtroDirecao'), 1);
-                $user->filtroFase = substr($request->get('filtroFase'), 1);
-                $user->filtroMoeda = substr($request->get('filtroMoeda'), 1);
-                $user->filtroTipoCusto = substr($request->get('filtroTipoCusto'), 1);
-                $user->filtroResultado = substr($request->get('filtroResultado'), 1);
-            }
-
-            $user->save();
-        }
-
-        $tags = Tag::all()->sortBy('nmTag');
-        $alunos = Aluno::listarAlunosTags($user->filtroTag);
-        //$tags = Tag::all()->sortBy('nmTag');
-        $corretoras = Corretora::all()->sortBy('nome');
-        $ativos = Ativo::all()->sortBy('nome');
+        $filtro = new FiltroController();
+        $filtro = $filtro->gerarFiltro('resultados');
 
         $trades = Trade::listaResultadosUsers($user);
-
-        $stringCorretoras = '';
-        $explode = explode(',', $user->filtroCorretora);
-        if($explode[0] != null){
-            foreach($explode as $id_corretora) {
-                $corretora = Corretora::where('id', $id_corretora)->first();
-                $stringCorretoras .= ",".$corretora->nome;
-            }
-            $stringCorretoras = substr($stringCorretoras, 1);
-        }
-
-        $stringAtivos = '';
-        if($explode[0] != null){
-            $explode = explode(',', $user->filtroAtivo);
-            foreach($explode as $id_ativo) {
-                $ativo = Ativo::where('id', $id_ativo)->first();
-                $stringAtivos .= ",".$ativo->nome;
-            }
-            $stringAtivos = substr($stringAtivos, 1);
-        }
-
-        return view('resultados/index', compact('tags','corretoras','ativos',
-        'stringCorretoras','stringAtivos','trades','alunos'));
+        return view('resultados/index', compact('filtro','trades','user'));
     }
 
     public function onePageReport(Request $request, $trades = NULL, $controleRetorno = null){
         if($controleRetorno == null){
             $controleRetorno = 'view';
             $trades = $request->get('trades');
+            $stringTrades = substr($request->get('trades'),1);
         }
 
         $trades = substr($trades, 1);
@@ -135,17 +64,29 @@ class ResultadoController extends Controller
         $somaDinheiroContrato = 0;
 
         $somaPontosPosicaoGain = 0;
+        $somaPontosPosicaoGainTendencia = 0;
+        $somaPontosPosicaoGainContra = 0;
         $somaPontosContratoGain = 0;
         $somaDinheiroPosicaoGain = 0;
+        $somaDinheiroPosicaoGainTendencia = 0;
+        $somaDinheiroPosicaoGainContra = 0;
         $somaDinheiroContratoGain = 0;
 
         $somaPontosPosicaoLoss = 0;
+        $somaPontosPosicaoLossTendencia = 0;
+        $somaPontosPosicaoLossContra = 0;
         $somaPontosContratoLoss = 0;
         $somaDinheiroPosicaoLoss = 0;
+        $somaDinheiroPosicaoLossTendencia = 0;
+        $somaDinheiroPosicaoLossContra = 0;
         $somaDinheiroContratoLoss = 0;
 
         $qtGain = 0;
+        $qtGainTendencia = 0;
+        $qtGainContra = 0;
         $qtLoss = 0;
+        $qtLossTendencia = 0;
+        $qtLossContra = 0;
         $qtEmpate = 0;
 
         $tempoOperacoes = 0;
@@ -163,8 +104,12 @@ class ResultadoController extends Controller
         $qtSequenciaGain = 0;
         $qtSequenciaLoss = 0;
         $netProfitGrossLoss = 0;
+        $netProfitGrossLossTendencia = 0;
+        $netProfitGrossLossContra = 0;
 
         $despesas = 0;
+        $despesasTendencia = 0;
+        $despesasContra = 0;
 
         $somaVariacaoPreco = 0;
         $somaVariacaoPrecoGain = 0;
@@ -172,11 +117,94 @@ class ResultadoController extends Controller
         $somaVariacaoPrecoEmpate = 0;
 
         $i = 0;
+        $tradesFiltros = "";
+        $arrayAtivos = array();
+        $arrayAtivosDados = array();
+
+        $qtOperacaoCompra = 0;
+        $qtOperacaoVenda = 0;
+        $qtOperacaoCompraGain = 0;
+        $qtOperacaoVendaGain = 0;
+        $qtFase1 = 0;
+        $qtFase2 = 0;
+        $qtFase3 = 0;
+        $qtFase4 = 0;
+        $qtFase5 = 0;
+
+        $qtFase1Gain = 0;
+        $qtFase2Gain = 0;
+        $qtFase3Gain = 0;
+        $qtFase4Gain = 0;
+        $qtFase5Gain = 0;
 
         if(count($trades) > 0 && $trades[0] != ""){
             foreach ($trades as $id_trade){
                 $i++;
                 $trade = Trade::where('id', $id_trade)->first();
+                $a = Aluno::where('id', $trade->id_aluno)->first();
+
+                $tradesFiltros .= ",$a->nmAluno: Trade ID:".$trade->idOperacao." ";
+
+                $arrayDados = array();
+
+                if(array_key_exists($trade->id_ativo, $arrayAtivos)){
+                    $arrayAtivos[$trade->id_ativo] = $arrayAtivos[$trade->id_ativo] + 1;
+
+                    $arrayDados = $arrayAtivosDados[$trade->id_ativo];
+                    $arrayDados['qt'] = $arrayDados['qt'] + 1;
+                    if($trade->gainOrLoss == 'Gain'){
+                        $arrayDados['qt_acertos'] = $arrayDados['qt_acertos'] + 1;
+                    }
+                    elseif($trade->gainOrLoss == 'Loss'){
+                        $arrayDados['qt_erros'] = $arrayDados['qt_erros'] + 1;
+                    }
+                    $arrayDados['qt_pontosAtivo'] = $arrayDados['qt_pontosAtivo'] + $trade->resContratoPontos;
+                    $arrayDados['qt_contratos'] = $arrayDados['qt_contratos'] + $trade->quantidadeContratos;
+                    $arrayAtivosDados[$trade->id_ativo] = $arrayDados;
+                }
+                else{
+                    $arrayAtivos[$trade->id_ativo] = 1;
+
+                    $arrayDados['qt'] = 1;
+                    if($trade->gainOrLoss == 'Gain'){
+                        $arrayDados['qt_acertos'] = 1;
+                        $arrayDados['qt_erros'] = 0;
+
+                    }
+                    elseif($trade->gainOrLoss == 'Loss'){
+                        $arrayDados['qt_acertos'] = 0;
+                        $arrayDados['qt_erros'] = 1;
+                    }
+                    else{
+                        $arrayDados['qt_acertos'] = 0;
+                        $arrayDados['qt_erros'] = 0;
+                    }
+                    $arrayDados['qt_pontosAtivo'] = $trade->valorPontoContrato;
+                    $arrayDados['qt_contratos'] = $trade->quantidadeContratos;
+                    $arrayAtivosDados[$trade->id_ativo] = $arrayDados;
+                }
+
+                if($trade->fase == "Fase 01"){
+                    $qtFase1++;
+                }
+                elseif($trade->fase == "Fase 02"){
+                    $qtFase2++;
+                }
+                elseif($trade->fase == "Fase 03"){
+                    $qtFase3++;
+                }
+                elseif($trade->fase == "Fase 04"){
+                    $qtFase4++;
+                }
+                elseif($trade->fase == "Fase 05"){
+                    $qtFase5++;
+                }
+
+                if($trade->operacao == "Compra"){
+                    $qtOperacaoCompra++;
+                }elseif($trade->operacao == "Venda"){
+                    $qtOperacaoVenda++;
+                }
 
                 //vamos analizar a sequencia de gain ou loss
                 if($trade->gainOrLoss == "Gain"){
@@ -185,6 +213,28 @@ class ResultadoController extends Controller
                     }
                     else{
                         $qtSequenciaGain = 1;
+                    }
+
+                    if($trade->operacao == "Compra"){
+                        $qtOperacaoCompraGain++;
+                    }elseif($trade->operacao == "Venda"){
+                        $qtOperacaoVendaGain++;
+                    }
+
+                    if($trade->fase == "Fase 01"){
+                        $qtFase1Gain++;
+                    }
+                    elseif($trade->fase == "Fase 02"){
+                        $qtFase2Gain++;
+                    }
+                    elseif($trade->fase == "Fase 03"){
+                        $qtFase3Gain++;
+                    }
+                    elseif($trade->fase == "Fase 04"){
+                        $qtFase4Gain++;
+                    }
+                    elseif($trade->fase == "Fase 05"){
+                        $qtFase5Gain++;
                     }
                 }
                 elseif($trade->gainOrLoss == "Loss"){
@@ -220,6 +270,20 @@ class ResultadoController extends Controller
                     $somaDinheiroPosicaoGain += ($trade->resPosicaoFinanceiro * $trade->$multiplicador);
                     $somaDinheiroContratoGain += ($trade->resContratoFinanceiro * $trade->$multiplicador);
 
+                    if($trade->direcao == "Tendência"){
+                        $somaPontosPosicaoGainTendencia += $trade->resPosicaoPontos;
+                        $somaDinheiroPosicaoGainTendencia += ($trade->resPosicaoFinanceiro * $trade->$multiplicador);
+                        $qtGainTendencia++;
+                        $netProfitGrossLossTendencia += $resPosicaoFinanceiriMB;
+                        $despesasTendencia += $custoEntradaMB + $custoSaidaMB;
+                    }elseif($trade->direcao == "Contra-tendência"){
+                        $somaPontosPosicaoGainContra += $trade->resPosicaoPontos;
+                        $somaDinheiroPosicaoGainContra += ($trade->resPosicaoFinanceiro * $trade->$multiplicador);
+                        $qtGainContra++;
+                        $netProfitGrossLossContra += $resPosicaoFinanceiriMB;
+                        $despesasContra += $custoEntradaMB + $custoSaidaMB;
+                    }
+
                     //vamos verificar a maiorOperacaoGain
                     if($resPosicaoFinanceiriMB > $maiorOperacaoGain[1]){
                         $maiorOperacaoGain[0] = $trade->idOperacao;
@@ -237,6 +301,20 @@ class ResultadoController extends Controller
                     $somaDinheiroPosicaoLoss += ($trade->resPosicaoFinanceiro * $trade->$multiplicador);
                     $somaDinheiroContratoLoss += ($trade->resContratoFinanceiro * $trade->$multiplicador);
 
+                    if($trade->direcao == "Tendência"){
+                        $somaPontosPosicaoLossTendencia += $trade->resPosicaoPontos;
+                        $somaDinheiroPosicaoLossTendencia += ($trade->resPosicaoFinanceiro * $trade->$multiplicador);
+                        $qtLossTendencia++;
+                        $netProfitGrossLossTendencia += $resPosicaoFinanceiriMB;
+                        $despesasTendencia += $custoEntradaMB + $custoSaidaMB;
+                    }elseif($trade->direcao == "Contra-tendência"){
+                        $somaPontosPosicaoLossContra += $trade->resPosicaoPontos;
+                        $somaDinheiroPosicaoLossContra += ($trade->resPosicaoFinanceiro * $trade->$multiplicador);
+                        $qtLossContra++;
+                        $netProfitGrossLossContra += $resPosicaoFinanceiriMB;
+                        $despesasContra += $custoEntradaMB + $custoSaidaMB;
+                    }
+
                     //vamos verificar a maiorOperacaoLoss
                     if(abs($resPosicaoFinanceiriMB) > abs($maiorOperacaoLoss[1])){
                         $maiorOperacaoLoss[0] = $trade->idOperacao;
@@ -252,22 +330,88 @@ class ResultadoController extends Controller
                     $somaVariacaoPrecoEmpate += $trade->variacaoEntradaSaida;
                 }
 
+                if(!$trade->$multiplicador){
+                    $data = explode(' ', $trade->dtHrSaida);
+
+                    $controller = new TradeAlunoController();
+
+                    if($trade->moeda != "BRL"){
+                        $resposta = $controller->cotacaoMoeda($trade->moeda, 'BRL', $data[0]);
+                        if(isset($resposta[0]['bid'])){
+                            $trade->cotacaoBRL = $resposta[0]['bid'];
+                        }
+                    }
+                    else{
+                        $trade->cotacaoBRL = 1;
+                    }
+
+                    if($trade->moeda != "USD"){
+                        $resposta = $controller->cotacaoMoeda($trade->moeda, 'USD', $data[0]);
+                        if(isset($resposta[0]['bid'])){
+                            $trade->cotacaoUSD = $resposta[0]['bid'];
+                        }
+                    }
+                    else{
+                        $trade->cotacaoUSD = 1;
+                    }
+
+                    if($trade->moeda != "EUR"){
+                        $resposta = $controller->cotacaoMoeda($trade->moeda, 'EUR', $data[0]);
+                        if(isset($resposta[0]['bid'])){
+                            $trade->cotacaoEUR = $resposta[0]['bid'];
+                        }
+                    }
+                    else{
+                        $trade->cotacaoEUR = 1;
+                    }
+
+                    if($trade->moeda != "GBP"){
+                        $resposta = $controller->cotacaoMoeda($trade->moeda, 'GBP', $data[0]);
+                        if(isset($resposta[0]['bid'])){
+                            $trade->cotacaoGBP = $resposta[0]['bid'];
+                        }
+                    }
+                    else{
+                        $trade->cotacaoGBP = 1;
+                    }
+
+                    if($trade->moeda != "JPY"){
+                        $resposta = $controller->cotacaoMoeda($trade->moeda, 'JPY', $data[0]);
+                        if(isset($resposta[0]['bid'])){
+                            $trade->cotacaoJPY = $resposta[0]['bid'];
+                        }
+                    }
+                    else{
+                        $trade->cotacaoJPY = 1;
+                    }
+                    $trade->save();
+                }
+
                 $somaPontosPosicao += $trade->resPosicaoPontos;
                 $somaPontosContrato += $trade->resContratoPontos;
                 $somaDinheiroPosicao += ($trade->resPosicaoFinanceiro * $trade->$multiplicador);
                 $somaDinheiroContrato += ($trade->resContratoFinanceiro * $trade->$multiplicador);
 
                 $somaVariacaoPreco += $trade->variacaoEntradaSaida;
-
-                //echo "<pre>";
-                //print_r($trade);
-                //echo "</pre>";
-                //echo $somaDinheiroPosicaoGain."<br>";
-                //echo $somaDinheiroPosicaoLoss."<br>";
             }
         }
 
-        //dd($somaDinheiroPosicaoGain, $somaDinheiroPosicaoLoss);
+        $porcAcertoFase1 = $qtFase1 > 0 ? round($qtFase1Gain * 100 / $qtFase1,2) : 0;
+        $porcAcertoFase2 = $qtFase2 > 0 ? round($qtFase2Gain * 100 / $qtFase2,2) : 0;
+        $porcAcertoFase3 = $qtFase3 > 0 ? round($qtFase3Gain * 100 / $qtFase3,2) : 0;
+        $porcAcertoFase4 = $qtFase4 > 0 ? round($qtFase4Gain * 100 / $qtFase4,2) : 0;
+        $porcAcertoFase5 = $qtFase5 > 0 ? round($qtFase5Gain * 100 / $qtFase5,2) : 0;
+
+        $principaisAtivos = array();
+        arsort($arrayAtivos);
+        $controlAtivo = 0;
+        foreach ($arrayAtivos as $id => $qt) {
+            if($controlAtivo < 5){
+                $ativo = Ativo::where('id', $id)->first();
+                $principaisAtivos[] = $ativo;
+            }
+            $controlAtivo++;
+        }
 
         $resultado['somaPontosPosicao'] = round($somaPontosPosicao,2);
         $resultado['somaPontosContrato'] = round($somaPontosContrato,2);
@@ -341,7 +485,11 @@ class ResultadoController extends Controller
         $resultado['maiorSequenciaGain'] = $maiorSequenciaGain;
         $resultado['maiorSequenciaLoss'] = $maiorSequenciaLoss;
         $resultado['despesas'] = $despesas;
+        $resultado['despesasTendencia'] = $despesasTendencia;
+        $resultado['despesasContra'] = $despesasContra;
         $resultado['netProfitGrossLoss'] = $netProfitGrossLoss;
+        $resultado['netProfitGrossLossTendencia'] = $netProfitGrossLossTendencia;
+        $resultado['netProfitGrossLossContra'] = $netProfitGrossLossContra;
 
         if($somaDinheiroPosicaoGain > 0 && $somaDinheiroPosicaoLoss == 0){
             $resultado['risk_reward_1'] = "0";
@@ -352,7 +500,7 @@ class ResultadoController extends Controller
             $resultado['risk_reward_2'] = '0';
         }
         else{
-            if($somaDinheiroPosicaoGain == 0 && $somaPontosPosicaoLoss == 0){
+            if($somaDinheiroPosicaoGain == 0 && $somaDinheiroPosicaoLoss == 0){
                 $resultado['risk_reward_1'] = "1";
                 $resultado['risk_reward_2'] = "1";
             }
@@ -362,7 +510,61 @@ class ResultadoController extends Controller
             }
             else{
                 $resultado['risk_reward_1'] = "1";
-                $resultado['risk_reward_2'] = round(abs($somaDinheiroPosicaoGain / $somaDinheiroPosicaoLoss), 2);
+                if($somaDinheiroPosicaoLoss > 0){
+                    $resultado['risk_reward_2'] = round(abs($somaDinheiroPosicaoGain / $somaDinheiroPosicaoLoss), 2);
+                }
+                else{
+                    $resultado['risk_reward_2'] = 0;
+                }
+            }
+        }
+
+        if($somaDinheiroPosicaoGainTendencia > 0 && $somaDinheiroPosicaoLossTendencia == 0){
+            $resultado['risk_reward_1_tendencia'] = "0";
+            $resultado['risk_reward_2_tendencia'] = 'Ganho Max';
+        }
+        elseif($somaDinheiroPosicaoGainTendencia == 0 && abs($somaDinheiroPosicaoLossTendencia) > 0){
+            $resultado['risk_reward_1_tendencia'] = "Perda Max";
+            $resultado['risk_reward_2_tendencia'] = '0';
+        }
+        else{
+            if($somaDinheiroPosicaoGainTendencia == 0 && $somaDinheiroPosicaoLossTendencia == 0){
+                $resultado['risk_reward_1_tendencia'] = "1";
+                $resultado['risk_reward_2_tendencia'] = "1";
+            }
+            elseif(abs($somaDinheiroPosicaoLossTendencia) > $somaDinheiroPosicaoGainTendencia){
+                $resultado['risk_reward_1_tendencia'] = round(abs($somaDinheiroPosicaoLossTendencia) / $somaDinheiroPosicaoGainTendencia, 2);
+                $resultado['risk_reward_2_tendencia'] = '1';
+            }
+            else{
+                $resultado['risk_reward_1_tendencia'] = "1";
+                if($somaDinheiroPosicaoLossTendencia){
+                    $resultado['risk_reward_2_tendencia'] = round(abs($somaDinheiroPosicaoGainTendencia / $somaDinheiroPosicaoLossTendencia), 2);
+                }
+                $resultado['risk_reward_2_tendencia'] = '0';
+            }
+        }
+
+        if($somaDinheiroPosicaoGainContra > 0 && $somaDinheiroPosicaoLossContra == 0){
+            $resultado['risk_reward_1_contra'] = "0";
+            $resultado['risk_reward_2_contra'] = 'Ganho Max';
+        }
+        elseif($somaDinheiroPosicaoGainContra == 0 && abs($somaDinheiroPosicaoLossContra) > 0){
+            $resultado['risk_reward_1_contra'] = "Perda Max";
+            $resultado['risk_reward_2_contra'] = '0';
+        }
+        else{
+            if($somaDinheiroPosicaoGainContra == 0 && $somaDinheiroPosicaoLossContra == 0){
+                $resultado['risk_reward_1_contra'] = "1";
+                $resultado['risk_reward_2_contra'] = "1";
+            }
+            elseif(abs($somaDinheiroPosicaoLossContra) > $somaDinheiroPosicaoGainContra){
+                $resultado['risk_reward_1_contra'] = round(abs($somaDinheiroPosicaoLossContra) / $somaDinheiroPosicaoGainContra, 2);
+                $resultado['risk_reward_2_contra'] = '1';
+            }
+            else{
+                $resultado['risk_reward_1_contra'] = "1";
+                $resultado['risk_reward_2_contra'] = round(abs($somaDinheiroPosicaoGainContra / $somaDinheiroPosicaoLossContra), 2);
             }
         }
 
@@ -371,6 +573,20 @@ class ResultadoController extends Controller
         }
         else{
             $resultado['txAcertos'] = round($qtGain / ($qtGain + $qtLoss) * 100, 2);
+        }
+
+        if($qtGainTendencia == 0){
+            $resultado['txAcertos_tendencia'] = '0';
+        }
+        else{
+            $resultado['txAcertos_tendencia'] = round($qtGainTendencia / ($qtGainTendencia + $qtLossTendencia) * 100, 2);
+        }
+
+        if($qtGainContra == 0){
+            $resultado['txAcertos_contra'] = '0';
+        }
+        else{
+            $resultado['txAcertos_contra'] = round($qtGainContra / ($qtGainContra + $qtLossContra) * 100, 2);
         }
 
         $resultado['somaVariacaoPreco'] = $somaVariacaoPreco;
@@ -415,8 +631,8 @@ class ResultadoController extends Controller
         }
 
         $stringAtivos = '';
+        $explode = explode(',', $user->filtroAtivo);
         if($explode[0] != null){
-            $explode = explode(',', $user->filtroAtivo);
             foreach($explode as $id_ativo) {
                 $ativo = Ativo::where('id', $id_ativo)->first();
                 $stringAtivos .= ",".$ativo->nome;
@@ -424,8 +640,18 @@ class ResultadoController extends Controller
             $stringAtivos = substr($stringAtivos, 1);
         }
 
+        $tradesFiltros = substr($tradesFiltros, 1);
+
         if($controleRetorno == "view"){
-            return view('resultados/onePageReport', compact('resultado','moeda','qtOperacoes','user','stringCorretoras','stringAtivos'));
+            //vamos salvar todas as trades na tag filtroTrades do user
+            $user->filtroTrades = $stringTrades;
+            $user->save();
+            return view('resultados/onePageReport', compact('resultado','moeda',
+            'qtOperacoes','user','stringCorretoras','stringAtivos',
+            'qtOperacaoCompra','qtOperacaoCompraGain','qtOperacaoVenda',
+            'porcAcertoFase1','porcAcertoFase2','porcAcertoFase3',
+            'porcAcertoFase4','porcAcertoFase5','principaisAtivos',
+            'arrayAtivosDados','tradesFiltros','qtOperacaoVendaGain'));
         }
         else{
             return $resultado;
@@ -645,6 +871,26 @@ class ResultadoController extends Controller
             </body>
         </html>";
         exit();
+    }
+
+    public function buscarAvaliacao(){
+        $trade_id = $_GET['trade_id'];
+        $trade = Trade::where('id', $trade_id)->first();
+
+        $retorno['analiseMentor'] = $trade->analiseMentor;
+        $retorno['aprovacaoMentor'] = $trade->aprovacaoMentor;
+        $retorno['obsMentor'] = $trade->obsMentor;
+
+        echo json_encode($retorno);
+    }
+
+    public function avaliar(Request $request){
+        $trade_id = $request->get('trade_id');
+        $dados = $request->except('_token','trade_id');
+
+        Trade::where('id', $trade_id)->update($dados);
+
+        return redirect()->route('resultados');
     }
 
 }

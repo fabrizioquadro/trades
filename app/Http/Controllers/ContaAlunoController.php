@@ -46,7 +46,7 @@ class ContaAlunoController extends Controller
     public function update(Request $request){
         $aluno = session()->get('aluno');
         $id = $request->get('id');
-        $dados = $request->only('nrConta','nmConta','id_corretora','dsConta','vlContaInc');
+        $dados = $request->only('nrConta','nmConta','id_corretora','dsConta','vlContaInc','tpConta');
         $dados['vlContaInc'] = valorFormDb($dados['vlContaInc']);
 
         Conta::where('id',$id)

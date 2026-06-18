@@ -7,66 +7,94 @@ use App\Models\Trade;
 use App\Models\Conta;
 use App\Models\Ativo;
 use App\Models\AtivoCorretora;
+use App\Models\AtivoFavoritoAluno;
 use App\Models\Aluno;
 use App\Models\Corretora;
+use App\Http\Controllers\ResultadoAlunoController;
+use App\Http\Controllers\FiltroAlunoController;
 
 class TradeAlunoController extends Controller
 {
     public function index(Request $request){
         $aluno = session()->get('aluno');
 
-        if($request->has('pesquisar')){
-            $dados = $request->except('_token','controleFiltro');
+        $filtro = new FiltroAlunoController();
+        $filtroHtml = $filtro->geraFiltroAluno('aluno.trades');
 
-            $aluno->dtEntradaInc = $dados['dtEntradaInc'];
-            $aluno->dtEntradaFn = $dados['dtEntradaFn'];
-            $aluno->dtSaidaInc = $dados['dtSaidaInc'];
-            $aluno->dtSaidaFn = $dados['dtSaidaFn'];
-            $aluno->filtroStatus = $dados['filtroStatus'] == NULL ? NULL : substr($dados['filtroStatus'], 1);
-            $aluno->filtroTipoOperacao = $dados['filtroTipoOperacao'] == NULL ? NULL : substr($dados['filtroTipoOperacao'], 1);
-            $aluno->filtroPais = $dados['filtroPais'] == NULL ? NULL : substr($dados['filtroPais'], 1);
-            $aluno->filtroCorretora = $dados['filtroCorretora'] == NULL ? NULL : substr($dados['filtroCorretora'], 1);
-            $aluno->filtroTipoConta = $dados['filtroTipoConta'] == NULL ? NULL : substr($dados['filtroTipoConta'], 1);
-            $aluno->filtroConta = $dados['filtroConta'] == NULL ? NULL : substr($dados['filtroConta'], 1);
-            $aluno->filtroAtivo = $dados['filtroAtivo'] == NULL ? NULL : substr($dados['filtroAtivo'], 1);
-            $aluno->filtroTipoAtivo = $dados['filtroTipoAtivo'] == NULL ? NULL : substr($dados['filtroTipoAtivo'], 1);
-            $aluno->filtroOperacao = $dados['filtroOperacao'] == NULL ? NULL : substr($dados['filtroOperacao'], 1);
-            $aluno->filtroDirecao = $dados['filtroDirecao'] == NULL ? NULL : substr($dados['filtroDirecao'], 1);
-            $aluno->filtroFase = $dados['filtroFase'] == NULL ? NULL : substr($dados['filtroFase'], 1);
-            $aluno->filtroMoeda = $dados['filtroMoeda'] == NULL ? NULL : substr($dados['filtroMoeda'], 1);
-            $aluno->filtroTipoCusto = $dados['filtroTipoCusto'] == NULL ? NULL : substr($dados['filtroTipoCusto'], 1);
-            $aluno->filtroResultado = $dados['filtroResultado'] == NULL ? NULL : substr($dados['filtroResultado'], 1);
-
-            $aluno->save();
-
-        }
-
-        //$trades = Trade::listarTradesAluno($aluno);
-        $trades = Trade::listaResultados($aluno);
+        $trades = Trade::listaTradesAlunoTrades($aluno);
 
         $contas = Conta::where('id_aluno', $aluno->id)->orderBy('nrConta')->get();
         $corretoras = Corretora::all()->sortBy('nome');
         $ativos = Ativo::all()->sortBy('nome');
 
         return view('acessoAluno/trades/index', compact('aluno','trades','contas',
-        'corretoras','ativos'));
+        'corretoras','ativos','filtroHtml'));
+    }
+
+    public function filtroTempo($tempo){
+        $filtro = new FiltroAlunoController();
+        return $filtro->filtrarTempo($tempo, 'aluno.trades');
     }
 
     public function buscaAtivosCorretora(){
+        $aluno = session()->get('aluno');
+
         $conta = Conta::where('id', $_GET['id_conta'])->first();
 
         $ativos = AtivoCorretora::where('id_corretora', $conta->id_corretora)->get();
 
+        $ativos_fav = AtivoFavoritoAluno::where('aluno_id', $aluno->id)->orderBy('nmAtivoFav')->get();
+
+        $array_ativos = array();
+
+        $favoritos = array();
+
+        foreach($ativos_fav as $linha){
+            $array_ativos[] = $linha->ativo_id;
+            $favoritos[] = $linha->ativo_id;
+        }
+
+        foreach($ativos as $linha){
+            if(array_search($linha->id_ativo, $favoritos) === false){
+                array_push($array_ativos, $linha->id_ativo);
+            }
+        }
+
         $html = "<option value=''>Opções</option>";
 
-        foreach ($ativos as $linha){
-            $ativo = Ativo::where('id', $linha->id_ativo)->first();
+        foreach ($array_ativos as $linha){
+            $ativo = Ativo::where('id', $linha)->first();
             if($ativo && $ativo->stAtivo == "Ativo"){
-                $html .= "<option value='".$ativo->id."'>".$ativo->nome."</option>";
+                $html .= "<option value='".$ativo->id."'>".$ativo->simbolo." - ".$ativo->nome." - Moeda: ".$ativo->moedaAtivo." - Tipo de Custo: ".$ativo->tipoCusto."</option>";
             }
         }
 
         $retorno['html'] = $html;
+        echo json_encode($retorno);
+    }
+
+    public function buscaValorContratoAtivo(){
+        $ativo = Ativo::where('id', $_GET['ativo_id'])->first();
+
+        $retorno['valor'] = $ativo->valor;
+        $retorno['contrato'] = $ativo->tamanhoContrato;
+
+        $retorno['controle_valor'] = 'true';
+        $retorno['controle_contrato'] = 'true';
+
+        //caso 1 se o contrato for preenchido e o valor for zero ou null
+        if(($ativo->valor == null OR $ativo->valor == 0) && $ativo->tamanhoContrato != null && $ativo->tamanhoContrato != 'Variável'){
+            $retorno['controle_valor_contrato'] = 'caso1';
+        }
+        //caso 2 se o tamanho do contrato for variavel e o valor fixo
+        elseif(($ativo->tamanhoContrato == null OR $ativo->tamanhoContrato == 'Variável') && $ativo->valor != null && $ativo->valor != 0){
+            $retorno['controle_valor_contrato'] = 'caso2';
+        }
+        //caso 3 Estados unidos valor fixo e contrato com numero inteiro
+        elseif($ativo->tamanhoContrato != null && $ativo->tamanhoContrato != 'Variável' && $ativo->valor != null && $ativo->valor != 0){
+            $retorno['controle_valor_contrato'] = 'caso3';
+        }
+
         echo json_encode($retorno);
     }
 
@@ -107,7 +135,9 @@ class TradeAlunoController extends Controller
         $dados['pais'] = $ativo != NULL ? $ativo->pais : "";
         $dados['id_corretora'] = $conta != NULL ? $conta->id_corretora : NULL;
         $dados['tipoAtivo'] = $ativo != NULL ? $ativo->tipoAtivo : "";
-        $dados['moeda'] = $conta != NULL ? $conta->moeda : "";
+        $dados['moeda'] = $ativo != NULL ? $ativo->moedaAtivo : "";
+        $dados['tipoConta'] = $conta != NULL ? $conta->tpConta : "";
+        $dados['tipoCusto'] = $ativo != NULL ? $ativo->tipoCusto : "";
 
         if($request->get('dtEntrada') != "" && $request->get('hrEntrada') != ""){
             $dados['dtHrEntrada'] = $request->get('dtEntrada')." ".$request->get('hrEntrada');
@@ -124,7 +154,7 @@ class TradeAlunoController extends Controller
         }
 
 
-        if($dados['dtHrEntrada'] && $dados['dtHrSaida'] && $dados['tipoOperacao'] && $request->get('id_conta') && $dados['tipoConta'] && $dados['id_ativo'] && $dados['operacao'] && $dados['direcao'] && $dados['fase'] && $dados['quantidadeContratos'] && $dados['valorPontoContrato'] && $dados['tipoCusto'] && $dados['custoOperacaoEntrada'] && $dados['custoOperacaoSaida'] && $dados['precoEntrada'] && $dados['precoSaida']){
+        if($dados['dtHrEntrada'] && $dados['dtHrSaida'] && $dados['tipoOperacao'] && $request->get('id_conta') && $dados['tipoConta'] && $dados['id_ativo'] && $dados['operacao'] && $dados['direcao'] && $dados['fase'] && $dados['quantidadeContratos'] &&  $dados['valorPontoContrato'] && $dados['tipoCusto'] && $dados['custoOperacaoEntrada'] && $dados['custoOperacaoSaida'] && $dados['precoEntrada'] && $dados['precoSaida']){
           $dados['stOperacao'] = "Closed";
           $dados['tempoOperacao'] = NULL;
         }
@@ -142,7 +172,10 @@ class TradeAlunoController extends Controller
 
         $trade = Trade::create($dados);
 
-        $this->calculaTrade($trade->id);
+        $this->calculaTrade($request, $trade->id);
+
+        //$resultado = new ResultadoAlunoController();
+        //return $resultado->limparFiltros('trades');
 
         return redirect()->route('aluno.trades')->with('mensagem', 'Trade Salva');
     }
@@ -183,7 +216,11 @@ class TradeAlunoController extends Controller
         $dados['pais'] = $ativo != NULL ? $ativo->pais : "";
         $dados['id_corretora'] = $conta != NULL ? $conta->id_corretora : NULL;
         $dados['tipoAtivo'] = $ativo != NULL ? $ativo->tipoAtivo : "";
-        $dados['moeda'] = $conta != NULL ? $conta->moeda : "";
+        $dados['moeda'] = $ativo != NULL ? $ativo->moedaAtivo : "";
+        $dados['tipoConta'] = $conta != NULL ? $conta->tpConta : "";
+        $dados['tipoCusto'] = $ativo != NULL ? $ativo->tipoCusto : "";
+
+
 
         if($request->get('dtEntrada') != "" && $request->get('hrEntrada') != ""){
             $dados['dtHrEntrada'] = $request->get('dtEntrada')." ".$request->get('hrEntrada');
@@ -210,13 +247,13 @@ class TradeAlunoController extends Controller
 
         Trade::where('id', $id)->update($dados);
 
-        $this->calculaTrade($id);
+        $this->calculaTrade($request, $id);
 
         return redirect()->route('aluno.trades')->with('mensagem', 'Trade Salva');
 
     }
 
-    public function calculaTrade($id_trade){
+    public function calculaTrade(Request $request, $id_trade){
         //variavel que controla a quantidade de casas decimais
         $decimais = 5;
         $trade = Trade::where('id', $id_trade)->first();
@@ -227,8 +264,15 @@ class TradeAlunoController extends Controller
             return false;
         }
 
-        $trade->tempoOperacao = calculaTempoOperacao($trade->dtHrEntrada, $trade->dtHrSaida);
+        if(strtotime($trade->dtHrEntrada) >= strtotime($trade->dtHrSaida)){
+            $trade->stOperacao = 'Open';
+            $trade->dtHrSaida = null;
+            $trade->save();
 
+            return false;
+        }
+
+        $trade->tempoOperacao = calculaTempoOperacao($trade->dtHrEntrada, $trade->dtHrSaida);
         $data = explode(' ', $trade->dtHrSaida);
 
         //vamos cotar as moedas
@@ -336,6 +380,9 @@ class TradeAlunoController extends Controller
         $trade->variacaoEntradaSaida = round( ($trade->resContratoPontos / $trade->precoEntrada) * 100 , $decimais);
 
         $trade->save();
+
+        $filtro = new FiltroAlunoController();
+        $filtro->setarFiltros($request, true);
         return true;
     }
 
@@ -343,7 +390,7 @@ class TradeAlunoController extends Controller
         do{
             $dataVar = str_replace('-','', $data);
 
-            $endPoint = "https://economia.awesomeapi.com.br/json/daily/".$moeda1."-".$moeda2."/?start_date=".$dataVar."&end_date=".$dataVar;
+            $endPoint = "https://economia.awesomeapi.com.br/json/daily/".$moeda1."-".$moeda2."/?token=f29303cf626a399c4dcf14346fe0c619a38245988b3cd178a3803496e33ac959&start_date=".$dataVar."&end_date=".$dataVar;
             $curl = curl_init();
             curl_setopt_array($curl, [
                 CURLOPT_URL => $endPoint,
@@ -380,6 +427,9 @@ class TradeAlunoController extends Controller
         $retorno['motivosEntrada'] = NULL;
         $retorno['motivosSaida'] = NULL;
         $retorno['ativoHtml'] = NULL;
+        $retorno['analiseMentor'] = NULL;
+        $retorno['aprovacaoMentor'] = NULL;
+        $retorno['obsMentor'] = NULL;
 
         if($trade->dtHrEntrada){
             $var = explode(' ', $trade->dtHrEntrada);
@@ -406,7 +456,7 @@ class TradeAlunoController extends Controller
         $retorno['tipoConta'] = $trade->tipoConta;
         $retorno['operacao'] = $trade->operacao;
         $retorno['direcao'] = $trade->direcao;
-        $retorno['fase'] = $trade->fase;
+        $retorno['fase'] = $trade->fase == NULL ? 'Não Informada' : $trade->fase;
         $retorno['quantidadeContratos'] = $trade->quantidadeContratos;
         $retorno['tipoCusto'] = $trade->tipoCusto;
         $retorno['valorPontoContrato'] = $trade->valorPontoContrato == "" ? "" : $trade->valorPontoContrato;
@@ -416,6 +466,12 @@ class TradeAlunoController extends Controller
         $retorno['precoSaida'] = $trade->precoSaida == "" ? "" : $trade->precoSaida;
         $retorno['motivosEntrada'] = $trade->motivosEntrada;
         $retorno['motivosSaida'] = $trade->motivosSaida;
+        $retorno['id_ativo'] = $trade->id_ativo;
+        $retorno['analiseMentor'] = $trade->analiseMentor;
+        $retorno['aprovacaoMentor'] = $trade->aprovacaoMentor;
+        $retorno['obsMentor'] = $trade->obsMentor;
+
+        $retorno['controleAnaliseMentor'] = $trade->aprovacaoMentor ? 'true' : 'false';
 
         //vamos ver o ativos
         if($trade->id_conta){
@@ -432,7 +488,7 @@ class TradeAlunoController extends Controller
                     if($ativo->id == $trade->id_ativo){
                         $selected = 'selected';
                     }
-                    $html .= "<option $selected value='$ativo->id'>$ativo->nome</option>";
+                    $html .= "<option $selected value='$ativo->id'>$ativo->simbolo - $ativo->nome - Moeda: $ativo->moedaAtivo - Tipo de Custo: $ativo->tipoCusto</option>";
                 }
             }
 
